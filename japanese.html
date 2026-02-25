@@ -46,16 +46,27 @@
                     </div>
                     <span class="text-xl font-bold tracking-tight">JPN1000 <span class="text-blue-600">Hub</span></span>
                 </div>
+                <!-- Desktop Nav -->
                 <div class="hidden md:flex gap-4">
                     <button onclick="switchTab('home')" class="nav-link active px-4 py-2 rounded-full text-sm font-medium transition-all">Overview</button>
                     <button onclick="switchTab('writing')" class="nav-link px-4 py-2 rounded-full text-sm font-medium transition-all">Writing</button>
                     <button onclick="switchTab('lessons')" class="nav-link px-4 py-2 rounded-full text-sm font-medium transition-all">Lessons</button>
                     <button onclick="switchTab('vocab')" class="nav-link px-4 py-2 rounded-full text-sm font-medium transition-all">Vocabulary</button>
                 </div>
+                <!-- Mobile Menu Button -->
                 <div class="md:hidden">
-                    <i data-lucide="menu"></i>
+                    <button onclick="toggleMobileMenu()" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                        <i data-lucide="menu"></i>
+                    </button>
                 </div>
             </div>
+        </div>
+        <!-- Mobile Nav Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-2">
+            <button onclick="switchTab('home')" class="nav-link active w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all">Overview</button>
+            <button onclick="switchTab('writing')" class="nav-link w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all">Writing</button>
+            <button onclick="switchTab('lessons')" class="nav-link w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all">Lessons</button>
+            <button onclick="switchTab('vocab')" class="nav-link w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all">Vocabulary</button>
         </div>
     </nav>
 
@@ -357,19 +368,50 @@
         };
 
         // --- LOGIC ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
         function switchTab(tabId) {
+            // Hide all contents
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            // Deactivate all links (desktop and mobile)
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
             
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            // Show selected content
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+            
+            // Activate all links corresponding to this tab
+            document.querySelectorAll(`[onclick*="switchTab('${tabId}')"]`).forEach(link => {
+                link.classList.add('active');
+            });
+
+            // Close mobile menu if it's open
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) {
+                mobileMenu.classList.add('hidden');
+            }
+
             window.scrollTo(0, 0);
         }
 
         function showLesson(num) {
             document.getElementById('lesson-content').innerHTML = lessons[num];
             document.querySelectorAll('.lesson-btn').forEach(btn => btn.classList.remove('bg-blue-600', 'text-white'));
-            event.currentTarget.classList.add('bg-blue-600', 'text-white');
+            
+            // Find the button that was clicked or matches the number
+            const eventTarget = window.event?.currentTarget;
+            if (eventTarget && eventTarget.classList.contains('lesson-btn')) {
+                eventTarget.classList.add('bg-blue-600', 'text-white');
+            } else {
+                // Fallback for initial load
+                const firstBtn = document.querySelector(`.lesson-btn[onclick*="showLesson(${num})"]`);
+                if (firstBtn) firstBtn.classList.add('bg-blue-600', 'text-white');
+            }
         }
 
         function renderHiragana() {
@@ -403,7 +445,14 @@
             });
 
             document.querySelectorAll('.vocab-filter').forEach(f => f.classList.remove('bg-blue-600', 'text-white'));
-            event.currentTarget.classList.add('bg-blue-600', 'text-white');
+            
+            const eventTarget = window.event?.currentTarget;
+            if (eventTarget && eventTarget.classList.contains('vocab-filter')) {
+                eventTarget.classList.add('bg-blue-600', 'text-white');
+            } else {
+                const initialBtn = document.querySelector(`.vocab-filter[onclick*="filterVocab('${cat}')"]`);
+                if (initialBtn) initialBtn.classList.add('bg-blue-600', 'text-white');
+            }
         }
 
         // Init
@@ -411,9 +460,6 @@
             lucide.createIcons();
             renderHiragana();
             showLesson(1);
-            
-            // Trigger filter button styles
-            const allBtn = document.querySelector('.vocab-filter');
             filterVocab('all');
         };
     </script>
