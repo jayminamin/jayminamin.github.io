@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPN1000 | Japanese Grammar Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .jp-text { font-family: 'Noto Sans JP', sans-serif; }
+        
+        .nav-link.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        @media (max-width: 640px) {
+            .chart-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg">
+                        <i data-lucide="languages"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight">JPN1000 <span class="text-blue-600">Hub</span></span>
+                </div>
+                <div class="hidden md:flex gap-4">
+                    <button onclick="switchTab('home')" class="nav-link active px-4 py-2 rounded-full text-sm font-medium transition-all">Overview</button>
+                    <button onclick="switchTab('writing')" class="nav-link px-4 py-2 rounded-full text-sm font-medium transition-all">Writing</button>
+                    <button onclick="switchTab('lessons')" class="nav-link px-4 py-2 rounded-full text-sm font-medium transition-all">Lessons</button>
+                    <button onclick="switchTab('vocab')" class="nav-link px-4 py-2 rounded-full text-sm font-medium transition-all">Vocabulary</button>
+                </div>
+                <div class="md:hidden">
+                    <i data-lucide="menu"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- HOME TAB -->
+        <div id="home" class="tab-content active space-y-12">
+            <header class="text-center space-y-4 py-12">
+                <h1 class="text-5xl font-extrabold text-slate-900 leading-tight">Master Japanese <br><span class="text-blue-600">Step by Step</span></h1>
+                <p class="text-xl text-slate-600 max-w-2xl mx-auto">A comprehensive resource for Katsuji Nakamura's JPN1000 course, covering grammar, writing, and vocabulary.</p>
+            </header>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="book-open"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Sentence Logic</h3>
+                    <p class="text-slate-600">Understand the SOV (Subject-Object-Verb) structure and how Japanese concludes with verbs.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="pen-tool"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Particle Mastery</h3>
+                    <p class="text-slate-600">Learn to use は, の, も, を, and に correctly to connect your ideas effectively.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="message-circle"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Daily Interaction</h3>
+                    <p class="text-slate-600">From self-introductions to inviting friends out, master practical conversational patterns.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- WRITING TAB -->
+        <div id="writing" class="tab-content space-y-10">
+            <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 class="text-3xl font-bold mb-6">Hiragana Chart (ひらがな)</h2>
+                <div class="grid grid-cols-5 md:grid-cols-10 gap-3">
+                    <!-- Generation by JS -->
+                    <div id="hiragana-container" class="contents"></div>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-blue-600 text-white p-6 rounded-2xl">
+                    <h4 class="font-bold text-xl mb-2">Kanji (漢字)</h4>
+                    <p class="opacity-90">Ideograms from China. They represent meanings. Example: 私 (watashi - I).</p>
+                </div>
+                <div class="bg-white border border-slate-200 p-6 rounded-2xl">
+                    <h4 class="font-bold text-xl mb-2">Hiragana (ひらがな)</h4>
+                    <p class="text-slate-600">The primary phonetic script for native words and grammatical particles.</p>
+                </div>
+                <div class="bg-white border border-slate-200 p-6 rounded-2xl">
+                    <h4 class="font-bold text-xl mb-2">Katakana (カタカナ)</h4>
+                    <p class="text-slate-600">Used for loan words (phonetically borrowed) like テレビ (TV) or カメラ (Camera).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- LESSONS TAB -->
+        <div id="lessons" class="tab-content space-y-8">
+            <!-- Sidebar Navigation for Lessons -->
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/4 space-y-2">
+                    <button onclick="showLesson(1)" class="lesson-btn w-full text-left px-4 py-3 rounded-xl hover:bg-slate-100 font-medium transition-colors border border-transparent active-lesson">Lesson 1: Introductions</button>
+                    <button onclick="showLesson(2)" class="lesson-btn w-full text-left px-4 py-3 rounded-xl hover:bg-slate-100 font-medium transition-colors border border-transparent">Lesson 2 & 3: Items & Places</button>
+                    <button onclick="showLesson(4)" class="lesson-btn w-full text-left px-4 py-3 rounded-xl hover:bg-slate-100 font-medium transition-colors border border-transparent">Lesson 4: Time & Schedule</button>
+                    <button onclick="showLesson(5)" class="lesson-btn w-full text-left px-4 py-3 rounded-xl hover:bg-slate-100 font-medium transition-colors border border-transparent">Lesson 5: Movement</button>
+                    <button onclick="showLesson(6)" class="lesson-btn w-full text-left px-4 py-3 rounded-xl hover:bg-slate-100 font-medium transition-colors border border-transparent">Lesson 6: Daily Actions</button>
+                </div>
+                
+                <div class="lg:w-3/4 bg-white p-8 rounded-2xl border border-slate-200 min-h-[500px]">
+                    <div id="lesson-content">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VOCABULARY TAB -->
+        <div id="vocab" class="tab-content space-y-8">
+            <div class="flex flex-wrap gap-4 mb-8">
+                <button onclick="filterVocab('all')" class="vocab-filter px-5 py-2 rounded-full bg-slate-200 hover:bg-blue-600 hover:text-white transition-all text-sm font-semibold active-filter">All</button>
+                <button onclick="filterVocab('greetings')" class="vocab-filter px-5 py-2 rounded-full bg-slate-200 hover:bg-blue-600 hover:text-white transition-all text-sm font-semibold">Greetings</button>
+                <button onclick="filterVocab('nouns')" class="vocab-filter px-5 py-2 rounded-full bg-slate-200 hover:bg-blue-600 hover:text-white transition-all text-sm font-semibold">Nouns</button>
+                <button onclick="filterVocab('verbs')" class="vocab-filter px-5 py-2 rounded-full bg-slate-200 hover:bg-blue-600 hover:text-white transition-all text-sm font-semibold">Verbs</button>
+                <button onclick="filterVocab('time')" class="vocab-filter px-5 py-2 rounded-full bg-slate-200 hover:bg-blue-600 hover:text-white transition-all text-sm font-semibold">Days & Time</button>
+                <button onclick="filterVocab('numbers')" class="vocab-filter px-5 py-2 rounded-full bg-slate-200 hover:bg-blue-600 hover:text-white transition-all text-sm font-semibold">Numbers</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="vocab-list">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="mb-2">JPN1000 Course Material Reimagined</p>
+            <p class="text-sm">Based on the teachings of Katsuji Nakamura</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA ---
+        const hiragana = [
+            ['あ', 'a'], ['い', 'i'], ['う', 'u'], ['え', 'e'], ['お', 'o'],
+            ['か', 'ka'], ['き', 'ki'], ['く', 'ku'], ['け', 'ke'], ['こ', 'ko'],
+            ['さ', 'sa'], ['し', 'shi'], ['す', 'su'], ['せ', 'se'], ['そ', 'so'],
+            ['た', 'ta'], ['ち', 'chi'], ['つ', 'tsu'], ['て', 'te'], ['と', 'to'],
+            ['な', 'na'], ['に', 'ni'], ['ぬ', 'nu'], ['ね', 'ne'], ['の', 'no'],
+            ['は', 'ha'], ['ひ', 'hi'], ['ふ', 'fu'], ['へ', 'he'], ['ほ', 'ho'],
+            ['ま', 'ma'], ['み', 'mi'], ['む', 'mu'], ['め', 'me'], ['も', 'mo'],
+            ['や', 'ya'], [' ', ' '], ['ゆ', 'yu'], [' ', ' '], ['よ', 'yo'],
+            ['ら', 'ra'], ['り', 'ri'], ['る', 'ru'], ['れ', 're'], ['ろ', 'ro'],
+            ['わ', 'wa'], [' ', ' '], [' ', ' '], [' ', ' '], ['を', 'o/wo'],
+            ['ん', 'n']
+        ];
+
+        const vocabulary = [
+            { category: 'greetings', jp: 'はじめまして', romaji: 'Hajimemashite', en: 'Nice to meet you' },
+            { category: 'greetings', jp: 'どうぞよろしく', romaji: 'Doozo yoroshiku', en: 'Pleased to meet you' },
+            { category: 'greetings', jp: 'おはようございます', romaji: 'Ohayoo gozaimasu', en: 'Good morning' },
+            { category: 'greetings', jp: 'こんにちは', romaji: 'Konnichiwa', en: 'Good afternoon' },
+            { category: 'greetings', jp: 'こんばんは', romaji: 'Konbanwa', en: 'Good evening' },
+            { category: 'greetings', jp: 'すみません', romaji: 'Sumimasen', en: 'Excuse me / Sorry' },
+            { category: 'greetings', jp: 'そうですか', romaji: 'Soo desu ka', en: 'Oh, I see' },
+            
+            { category: 'nouns', jp: 'わたし', romaji: 'Watashi', en: 'I / Me' },
+            { category: 'nouns', jp: 'がくせい', romaji: 'Gakusei', en: 'Student' },
+            { category: 'nouns', jp: 'せんせい', romaji: 'Sensei', en: 'Teacher' },
+            { category: 'nouns', jp: 'かいしゃいん', romaji: 'Kaishain', en: 'Company employee' },
+            { category: 'nouns', jp: 'だいがく', romaji: 'Daigaku', en: 'University' },
+            { category: 'nouns', jp: 'ぎんこう', romaji: 'Ginkoo', en: 'Bank' },
+            { category: 'nouns', jp: 'ほん', romaji: 'Hon', en: 'Book' },
+            { category: 'nouns', jp: 'カメラ', romaji: 'Kamera', en: 'Camera' },
+            { category: 'nouns', jp: 'テレビ', romaji: 'Terebi', en: 'Television' },
+            { category: 'nouns', jp: 'ともだち', romaji: 'Tomodachi', en: 'Friend' },
+            
+            { category: 'time', jp: 'げつようび', romaji: 'Getsuyoobi', en: 'Monday' },
+            { category: 'time', jp: 'かようび', romaji: 'Kayoobi', en: 'Tuesday' },
+            { category: 'time', jp: 'すいようび', romaji: 'Suiyoobi', en: 'Wednesday' },
+            { category: 'time', jp: 'もくようび', romaji: 'Mokuyoobi', en: 'Thursday' },
+            { category: 'time', jp: 'きんようび', romaji: 'Kinyoobi', en: 'Friday' },
+            { category: 'time', jp: 'どようび', romaji: 'Doyoobi', en: 'Saturday' },
+            { category: 'time', jp: 'にちようび', romaji: 'Nichiyoobi', en: 'Sunday' },
+            { category: 'time', jp: 'いま', romaji: 'Ima', en: 'Now' },
+            { category: 'time', jp: 'まいあさ', romaji: 'Maiasa', en: 'Every morning' },
+            { category: 'time', jp: 'まいにち', romaji: 'Mainichi', en: 'Every day' },
+            
+            { category: 'verbs', jp: 'おきます', romaji: 'Okimasu', en: 'Wake up' },
+            { category: 'verbs', jp: 'ねます', romaji: 'Nemasu', en: 'Sleep' },
+            { category: 'verbs', jp: 'はたらきます', romaji: 'Hatarakimasu', en: 'Work' },
+            { category: 'verbs', jp: 'べんきょうします', romaji: 'Benkyoo shimasu', en: 'Study' },
+            { category: 'verbs', jp: 'いきます', romaji: 'Ikimasu', en: 'Go' },
+            { category: 'verbs', jp: 'きます', romaji: 'Kimasu', en: 'Come' },
+            { category: 'verbs', jp: 'かえります', romaji: 'Kaerimasu', en: 'Return' },
+            { category: 'verbs', jp: 'たべます', romaji: 'Tabemasu', en: 'Eat' },
+            { category: 'verbs', jp: 'のみます', romaji: 'Nomimasu', en: 'Drink' },
+            { category: 'verbs', jp: 'かいます', romaji: 'Kaimasu', en: 'Buy' },
+            
+            { category: 'numbers', jp: 'いち', romaji: 'Ichi', en: '1' },
+            { category: 'numbers', jp: 'に', romaji: 'Ni', en: '2' },
+            { category: 'numbers', jp: 'さん', romaji: 'San', en: '3' },
+            { category: 'numbers', jp: 'よん / し', romaji: 'Yon / Shi', en: '4' },
+            { category: 'numbers', jp: 'ご', romaji: 'Go', en: '5' },
+            { category: 'numbers', jp: 'ろく', romaji: 'Roku', en: '6' },
+            { category: 'numbers', jp: 'なな / しち', romaji: 'Nana / Shichi', en: '7' },
+            { category: 'numbers', jp: 'はち', romaji: 'Hachi', en: '8' },
+            { category: 'numbers', jp: 'きゅう / く', romaji: 'Kyuu / Ku', en: '9' },
+            { category: 'numbers', jp: 'じゅう', romaji: 'Juu', en: '10' },
+            { category: 'numbers', jp: 'ひゃく', romaji: 'Hyaku', en: '100' },
+            { category: 'numbers', jp: 'せん', romaji: 'Sen', en: '1,000' },
+            { category: 'numbers', jp: 'まん', romaji: 'Man', en: '10,000' }
+        ];
+
+        const lessons = {
+            1: `
+                <h2 class="text-3xl font-bold mb-4">Lesson 1: Introductions</h2>
+                <div class="space-y-6">
+                    <section>
+                        <h3 class="text-xl font-bold text-blue-600 mb-2">Basic Affirmative (A is B)</h3>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-blue-600">
+                            <p class="jp-text text-lg">私は学生です。</p>
+                            <p class="text-sm text-slate-500 italic">Watashi wa gakusei desu.</p>
+                            <p class="text-slate-700 font-medium">I am a student.</p>
+                        </div>
+                    </section>
+                    <section>
+                        <h3 class="text-xl font-bold text-blue-600 mb-2">Basic Negative (A is not B)</h3>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-red-400">
+                            <p class="jp-text text-lg">私は先生じゃありません。</p>
+                            <p class="text-sm text-slate-500 italic">Watashi wa sensei ja arimasen.</p>
+                            <p class="text-slate-700 font-medium">I am not a teacher.</p>
+                        </div>
+                    </section>
+                    <section>
+                        <h3 class="text-xl font-bold text-blue-600 mb-2">Key Particle: は (wa)</h3>
+                        <p class="text-slate-600">The "Topic Marker". It tells the listener what you are talking about.</p>
+                    </section>
+                </div>
+            `,
+            2: `
+                <h2 class="text-3xl font-bold mb-4">Lesson 2 & 3: Items & Places</h2>
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-blue-600">Demonstratives (KO-SO-A System)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <tr class="bg-slate-100"><th class="p-2">Target</th><th class="p-2">Near Me</th><th class="p-2">Near You</th><th class="p-2">Over There</th></tr>
+                            <tr><td class="p-2 font-bold">Objects</td><td class="p-2">これ (Kore)</td><td class="p-2">それ (Sore)</td><td class="p-2">あれ (Are)</td></tr>
+                            <tr><td class="p-2 font-bold">Locations</td><td class="p-2">ここ (Koko)</td><td class="p-2">そこ (Soko)</td><td class="p-2">あそこ (Asoko)</td></tr>
+                            <tr><td class="p-2 font-bold">Directions</td><td class="p-2">こちら (Kochira)</td><td class="p-2">そちら (Sochira)</td><td class="p-2">あちら (Achira)</td></tr>
+                        </table>
+                    </div>
+                    <section class="mt-4">
+                        <h3 class="text-xl font-bold text-blue-600 mb-2">Particle: の (no) - Possession</h3>
+                        <p class="jp-text text-lg">これは私の本です。</p>
+                        <p class="text-sm text-slate-500 italic">Kore wa watashi no hon desu.</p>
+                        <p class="text-slate-700">This is my book.</p>
+                    </section>
+                </div>
+            `,
+            4: `
+                <h2 class="text-3xl font-bold mb-4">Lesson 4: Time & Schedule</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold text-blue-600">Telling Time</h3>
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <p class="text-3xl font-bold text-blue-800">時 <span class="text-lg font-normal">(ji)</span></p>
+                            <p>Hours</p>
+                        </div>
+                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                            <p class="text-3xl font-bold text-indigo-800">分 <span class="text-lg font-normal">(fun/pun)</span></p>
+                            <p>Minutes</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold text-blue-600">Verb Tenses</h3>
+                        <ul class="space-y-2">
+                            <li class="flex justify-between border-b pb-1"><span>Present (+)</span> <span class="font-mono">~masu</span></li>
+                            <li class="flex justify-between border-b pb-1"><span>Present (-)</span> <span class="font-mono">~masen</span></li>
+                            <li class="flex justify-between border-b pb-1"><span>Past (+)</span> <span class="font-mono">~mashita</span></li>
+                            <li class="flex justify-between border-b pb-1"><span>Past (-)</span> <span class="font-mono">~masen deshita</span></li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            5: `
+                <h2 class="text-3xl font-bold mb-4">Lesson 5: Movement</h2>
+                <div class="space-y-6">
+                    <p class="text-slate-600">Expressing going, coming, or returning to a place.</p>
+                    <div class="p-6 bg-slate-900 text-white rounded-2xl">
+                        <p class="text-2xl jp-text mb-2">学校へ行きます。</p>
+                        <p class="opacity-70 italic mb-4">Gakkoo e ikimasu.</p>
+                        <p>I go to school.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="p-4 border border-slate-200 rounded-xl">
+                            <span class="font-bold text-blue-600">へ (e)</span>
+                            <p class="text-sm">Direction / Target</p>
+                        </div>
+                        <div class="p-4 border border-slate-200 rounded-xl">
+                            <span class="font-bold text-blue-600">で (de)</span>
+                            <p class="text-sm">By Means of (Transport)</p>
+                        </div>
+                        <div class="p-4 border border-slate-200 rounded-xl">
+                            <span class="font-bold text-blue-600">と (to)</span>
+                            <p class="text-sm">With (Person)</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            6: `
+                <h2 class="text-3xl font-bold mb-4">Lesson 6: Daily Actions</h2>
+                <div class="space-y-6">
+                    <section>
+                        <h3 class="text-xl font-bold text-blue-600 mb-2">Object Marker: を (o)</h3>
+                        <p class="jp-text text-xl">うがをたべます。</p>
+                        <p class="text-slate-500 italic">Ugari o tabemasu. (I eat ugali.)</p>
+                    </section>
+                    <section>
+                        <h3 class="text-xl font-bold text-blue-600 mb-2">Location of Action: で (de)</h3>
+                        <p class="jp-text text-xl">デパートでかいます。</p>
+                        <p class="text-slate-500 italic">Depaato de kaimasu. (I buy at the department store.)</p>
+                    </section>
+                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-200">
+                        <h4 class="font-bold mb-2">Invitations</h4>
+                        <p class="mb-2"><span class="font-bold">~masen ka?</span> : Won't you...?</p>
+                        <p><span class="font-bold">~mashoo!</span> : Let's...!</p>
+                    </div>
+                </div>
+            `
+        };
+
+        // --- LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showLesson(num) {
+            document.getElementById('lesson-content').innerHTML = lessons[num];
+            document.querySelectorAll('.lesson-btn').forEach(btn => btn.classList.remove('bg-blue-600', 'text-white'));
+            event.currentTarget.classList.add('bg-blue-600', 'text-white');
+        }
+
+        function renderHiragana() {
+            const container = document.getElementById('hiragana-container');
+            hiragana.forEach(([char, rom]) => {
+                const div = document.createElement('div');
+                div.className = char === ' ' ? 'p-4' : 'bg-slate-50 border border-slate-200 p-4 rounded-xl text-center shadow-sm';
+                div.innerHTML = char === ' ' ? '' : `<div class="text-2xl font-bold jp-text">${char}</div><div class="text-xs text-slate-400 font-mono">${rom}</div>`;
+                container.appendChild(div);
+            });
+        }
+
+        function filterVocab(cat) {
+            const list = document.getElementById('vocab-list');
+            list.innerHTML = '';
+            
+            const filtered = cat === 'all' ? vocabulary : vocabulary.filter(v => v.category === cat);
+            
+            filtered.forEach(v => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors shadow-sm";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">${v.category}</span>
+                    </div>
+                    <div class="text-2xl font-bold jp-text mb-1">${v.jp}</div>
+                    <div class="text-sm text-blue-600 font-medium mb-3">${v.romaji}</div>
+                    <div class="text-slate-700">${v.en}</div>
+                `;
+                list.appendChild(card);
+            });
+
+            document.querySelectorAll('.vocab-filter').forEach(f => f.classList.remove('bg-blue-600', 'text-white'));
+            event.currentTarget.classList.add('bg-blue-600', 'text-white');
+        }
+
+        // Init
+        window.onload = () => {
+            lucide.createIcons();
+            renderHiragana();
+            showLesson(1);
+            
+            // Trigger filter button styles
+            const allBtn = document.querySelector('.vocab-filter');
+            filterVocab('all');
+        };
+    </script>
+</body>
+</html>
