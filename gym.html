@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strength Protocol & Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .workout-card { background: #1e293b; border-radius: 1rem; overflow: hidden; border: 1px solid #334155; }
+        .table-row:nth-child(even) { background: #1e293b; }
+        .table-row:nth-child(odd) { background: #182235; }
+        .badge { @apply px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider; }
+        .badge-strength { background: #ef4444; color: white; }
+        .badge-accessory { background: #3b82f6; color: white; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                Gym Protocol
+            </h1>
+            <p class="text-slate-400">Customized Strength & Hypertrophy Tracker</p>
+        </header>
+
+        <!-- 1RM CALCULATOR TOOL -->
+        <section class="workout-card mb-12 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+            <div class="p-6 bg-slate-800/50 border-b border-slate-700">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Training Weight Calculator
+                </h2>
+                <p class="text-sm text-slate-400 mt-1">Enter your 1RM to find your working weights for the routines below.</p>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Enter 1-Rep Max (kg/lbs)</label>
+                    <input type="number" id="oneRMInput" placeholder="e.g. 100" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-2xl font-bold text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                    
+                    <div class="mt-4 flex items-center">
+                        <input type="checkbox" id="rpeAdjust" checked class="w-4 h-4 bg-slate-900 border-slate-600 rounded focus:ring-emerald-500 text-emerald-500">
+                        <label for="rpeAdjust" class="ml-2 text-sm text-slate-300 cursor-pointer">Adjust for RPE 9 (leave 1 rep in reserve)</label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2" id="calcResults">
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold">Strength (3-5 Reps)</div>
+                        <div class="text-xl font-bold text-white" id="res-strength">-</div>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold">Main Lift (6-8 Reps)</div>
+                        <div class="text-xl font-bold text-white" id="res-main">-</div>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold">Hypertrophy (8-12 Reps)</div>
+                        <div class="text-xl font-bold text-white" id="res-hyper">-</div>
+                    </div>
+                    <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold">Accessory (12-15 Reps)</div>
+                        <div class="text-xl font-bold text-white" id="res-accessory">-</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="space-y-12">
+            <!-- Day 1: Upper Strength -->
+            <section class="workout-card shadow-2xl">
+                <div class="p-6 bg-slate-800 border-b border-slate-700 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold">Day 1 · Upper Strength</h2>
+                        <p class="text-sm text-slate-400">Focus: Max Output / Lower Reps</p>
+                    </div>
+                    <span class="badge badge-strength">Power</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900/50 text-slate-400 text-sm">
+                            <tr>
+                                <th class="p-4">Exercise</th>
+                                <th class="p-4">Sets</th>
+                                <th class="p-4">Reps</th>
+                                <th class="p-4">Intensity</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Bench Press (Barbell)</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4 text-emerald-400">3-5</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Incline Bench Press (DB)</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4">6-10</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Bent Over Row (Barbell)</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4 text-emerald-400">3-5</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Weighted Pull-Ups</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4">6-10</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Overhead Press (Barbell)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">5-8</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Bicep Curl (Barbell)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">6-10</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Skull Crusher (EZ or DB)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">6-10</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Day 2: Lower Strength -->
+            <section class="workout-card shadow-2xl">
+                <div class="p-6 bg-slate-800 border-b border-slate-700 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold">Day 2 · Lower Strength</h2>
+                        <p class="text-sm text-slate-400">Focus: Posterior Chain & Foundations</p>
+                    </div>
+                    <span class="badge badge-strength">Power</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900/50 text-slate-400 text-sm">
+                            <tr>
+                                <th class="p-4">Exercise</th>
+                                <th class="p-4">Sets</th>
+                                <th class="p-4">Reps</th>
+                                <th class="p-4">Intensity</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Back Squat (Barbell)</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4 text-emerald-400">3-5</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Deadlift (Barbell)</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4 text-emerald-400">3-5</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Front Squat or Goblet Squat</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4">10-15</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Lying DB Leg Curl (on Bench)</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4">6-10</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Seated DB Calf Raise</td>
+                                <td class="p-4">4</td>
+                                <td class="p-4">6-10</td>
+                                <td class="p-4">RPE 9</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Day 3: Upper B -->
+            <section class="workout-card shadow-2xl">
+                <div class="p-6 bg-slate-800 border-b border-slate-700 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold">Day 3 · Upper B</h2>
+                        <p class="text-sm text-slate-400">Focus: Muscle Density & Volume</p>
+                    </div>
+                    <span class="badge badge-accessory">Growth</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900/50 text-slate-400 text-sm">
+                            <tr>
+                                <th class="p-4">Exercise</th>
+                                <th class="p-4">Sets</th>
+                                <th class="p-4">Reps</th>
+                                <th class="p-4">Modality</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Pause Bench Press (Barbell)</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4">7-10</td>
+                                <td class="p-4">Free Weight</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Neutral Grip Pull-Ups</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">Bodyweight</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Military Press (Barbell)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">7-10</td>
+                                <td class="p-4">Strict</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Face Pulls (Cable)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">Rear Delt Focus</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Bicep Curl (Dumbbell)</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">DB Alternate</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Close Grip Bench Press</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">Tricep Heavy</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Overhead Cable Extension</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">7-10</td>
+                                <td class="p-4">Stretch Focus</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Day 4: Lower B -->
+            <section class="workout-card shadow-2xl">
+                <div class="p-6 bg-slate-800 border-b border-slate-700 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold">Day 4 · Lower B</h2>
+                        <p class="text-sm text-slate-400">Focus: Quad Volume & Core</p>
+                    </div>
+                    <span class="badge badge-accessory">Growth</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900/50 text-slate-400 text-sm">
+                            <tr>
+                                <th class="p-4">Exercise</th>
+                                <th class="p-4">Sets</th>
+                                <th class="p-4">Reps</th>
+                                <th class="p-4">Modality</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Bulgarian Split Squat</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">7-10</td>
+                                <td class="p-4">Leg Press Alt</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Romanian Deadlift (Barbell)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">6-8</td>
+                                <td class="p-4">Slow Eccentric</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Single Leg RDL (Dumbbell)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">Balance/Iso</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Meadows Row (Barbell)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">T-Bar Alternative</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Dumbbell Shrugs</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">Pause at Top</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Standing Calf Raise (Barbell)</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">Full Stretch</td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-4 font-semibold">Ab Wheel Rollout</td>
+                                <td class="p-4">2</td>
+                                <td class="p-4">8-12</td>
+                                <td class="p-4">Machine Crunch Alt</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <footer class="mt-12 text-center text-slate-500 text-sm pb-10">
+            <p>Weight calculations based on standard percentage charts (Brzycki/Epley approximations).</p>
+        </footer>
+    </div>
+
+    <script>
+        const input = document.getElementById('oneRMInput');
+        const rpeCheck = document.getElementById('rpeAdjust');
+        
+        const results = {
+            strength: document.getElementById('res-strength'),
+            main: document.getElementById('res-main'),
+            hyper: document.getElementById('res-hyper'),
+            accessory: document.getElementById('res-accessory')
+        };
+
+        function updateWeights() {
+            let oneRM = parseFloat(input.value);
+            if (isNaN(oneRM) || oneRM <= 0) {
+                Object.values(results).forEach(el => el.textContent = '-');
+                return;
+            }
+
+            // Rep percentages (Approximate)
+            // If RPE 9 is checked, we calculate for one rep MORE than the target to ensure reserve.
+            const offset = rpeCheck.checked ? 1 : 0;
+
+            const getWeight = (reps) => {
+                const effectiveReps = reps + offset;
+                // Brzycki formula variant
+                const pct = (1.0278 - (0.0278 * effectiveReps));
+                const weight = oneRM * Math.max(0.4, pct);
+                // Round to nearest 2.5 for gym plates
+                return (Math.round(weight / 2.5) * 2.5).toFixed(1);
+            };
+
+            results.strength.textContent = `${getWeight(4)} kg`;  // Midpoint of 3-5
+            results.main.textContent = `${getWeight(7)} kg`;      // Midpoint of 6-8
+            results.hyper.textContent = `${getWeight(10)} kg`;    // Midpoint of 8-12
+            results.accessory.textContent = `${getWeight(13)} kg`; // Midpoint of 12-15
+        }
+
+        input.addEventListener('input', updateWeights);
+        rpeCheck.addEventListener('change', updateWeights);
+    </script>
+</body>
+</html>
