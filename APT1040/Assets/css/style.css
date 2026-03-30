@@ -9,7 +9,7 @@
     width: 100%;
     /* Changed height to min-height so it expands as you add cards */
     min-height: 100vh; 
-    background-image: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), url('APT1040/Assets/images/background2.jpg');
+    background-image: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), url('https://github.com/jayminamin/jayminamin.github.io/blob/3ea8fd6d1a7096611bcf7c7a4da00e8bc44cc5ca/APT1040/Assets/images/background2.jpg');
     background-size: cover;
     background-position: center;
     /* This creates the static/parallax effect */
