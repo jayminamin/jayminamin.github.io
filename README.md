@@ -1,2 +1,2 @@
 # jayminamin.github.io
-jayminamin.github.io/tracker/index.html
+Check out the [tracker!](tracker/index.html)
