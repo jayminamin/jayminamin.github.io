@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gym Tracker</title>
+<meta name="theme-color" content="#0c0d0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gym Tracker">
+<link id="pwa-manifest" rel="manifest">
+<link id="pwa-icon" rel="apple-touch-icon">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+@property --g1{syntax:"<color>";inherits:true;initial-value:#ff7a45}
+@property --g2{syntax:"<color>";inherits:true;initial-value:#4da3ff}
+@property --g3{syntax:"<color>";inherits:true;initial-value:#b277ff}
+@property --g4{syntax:"<color>";inherits:true;initial-value:#2fd6a0}
+@property --ac{syntax:"<color>";inherits:true;initial-value:#ff7a45}
+
+:root{color-scheme:dark;--bg:#0c0d0f;--s1:#16171a;--s2:#1f2024;--bd:#2a2c31;--tx:#f4f5f2;--mu:#8e9097;--ac:#ff7a45;--or:#ff5b2e;--bl:#3d8bff;--on:#0c0d0f;--bar-bg:rgba(255,255,255,.1);--grid-line:rgba(255,255,255,.045);--note-tx:#c9cbd0;--detail-tx:#d6d8dd;--chk-bd:#474a52;--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);transition:--ac .4s var(--ease),--g1 .5s var(--ease),--g2 .5s var(--ease),--g3 .5s var(--ease),--g4 .5s var(--ease)}
+html.light{color-scheme:light;--bg:#f5f6f8;--s1:#ffffff;--s2:#eceef2;--bd:#dcdfe6;--tx:#14161a;--mu:#636773;--ac:#e0531f;--on:#ffffff;--bar-bg:rgba(0,0,0,.09);--grid-line:rgba(0,0,0,.04);--note-tx:#3b3f4a;--detail-tx:#2b2f38;--chk-bd:#9ea4b0}
+html.theme-xf,html.theme-xf body,html.theme-xf .cal,html.theme-xf .cal2,html.theme-xf .opt,html.theme-xf .ex,html.theme-xf .dayrow,html.theme-xf .stat-box,html.theme-xf .set,html.theme-xf .btn,html.theme-xf .icon-btn,html.theme-xf .num-in,html.theme-xf .opt-grp{transition:background-color .28s var(--ease),border-color .28s var(--ease),color .28s var(--ease)!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg);-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 Archivo,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+main{width:100%;max-width:520px;margin:0 auto;padding:24px 20px 104px}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sub{color:var(--mu);font-size:13px;margin:0}
+.bar{display:block;height:5px;background:var(--bar-bg);border-radius:3px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--c,var(--ac));border-radius:3px;transition:width .38s var(--ease)}
+.cal{margin:18px 0 22px;padding:16px 10px 18px;border-radius:16px;background:var(--s1);border:1px solid var(--bd);transition:border-color .3s var(--ease)}
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dy{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;background:none;border:0;color:var(--mu);font:inherit;font-size:11px;cursor:pointer;transition:color .2s var(--ease),transform .15s var(--ease)}
+.dy span{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;font:700 18px Archivo,sans-serif;color:var(--tx);transition:transform .2s var(--spring),background-color .25s var(--ease),box-shadow .25s var(--ease),color .2s var(--ease)}
+.dy.full span{box-shadow:inset 0 0 0 2px var(--c)}.dy.on span{background:var(--c);color:var(--on);transform:scale(1.04)}
+.dy:active span{transform:scale(.91)}
+.pt{margin:18px 6px 0;font-size:14px;font-weight:600}.cal .bar{margin:8px 6px 0}
+.ex{margin-bottom:10px;border-radius:14px;background:var(--s1);border:1px solid var(--bd);overflow:hidden;transition:border-color .22s var(--ease),box-shadow .22s var(--ease),transform .18s var(--ease)}.ex.done{border-color:color-mix(in srgb,var(--ac) 45%,transparent)}
+.eh{display:flex;align-items:center;gap:12px;width:100%;min-height:68px;padding:12px 14px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;transition:background-color .18s var(--ease)}.eh.static{cursor:default}
+.eh:not(.static):active{background:color-mix(in srgb,var(--ac) 6%,transparent)}
+.no{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--s2);font-size:18px;font-weight:700;flex:none;transition:background-color .25s var(--ease),color .25s var(--ease),transform .25s var(--spring)}
+.done .no{background:var(--ac);color:var(--on)}.no .i{width:18px;height:18px;stroke-width:3}
+.en{flex:1;min-width:0;font-weight:600;font-size:15px;line-height:1.25}
+.pr-badge{display:inline-block;margin-left:6px;padding:2px 6px;border-radius:6px;background:rgba(255,200,61,.18);color:#ffc83d;font-size:10px;font-weight:800;letter-spacing:.04em;vertical-align:middle}
+html.light .pr-badge{background:rgba(217,140,0,.16);color:#9a6200}
+.rs{flex:none;text-align:right;min-width:84px}.rs b{display:block;font-size:20px;line-height:1;font-weight:700;color:var(--ac);white-space:nowrap;transition:color .3s var(--ease)}.rs span{font-size:11px;color:var(--mu)}
+.chev{color:var(--mu);transition:transform .24s var(--ease)}.open .chev{transform:rotate(90deg)}
+.eb{padding:0 14px 16px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 14px}
+.meta div{min-width:0;padding:10px 12px;border-radius:10px;background:var(--s2)}.meta .w{grid-column:1/-1}
+.meta dt{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu)}.meta dt .i{width:14px;height:14px;color:var(--ac)}.meta dd{margin:3px 0 0;font-size:14px;font-weight:500}
+.notes{margin:0 0 14px;color:var(--note-tx);font-size:14px}
+.sets{display:grid;gap:8px;margin-bottom:6px}
+.more{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0;background:none;border:0;color:var(--mu);font:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:color .18s var(--ease)}.more .i{width:14px;height:14px;transition:transform .22s var(--ease)}.more[aria-expanded=true] .i{transform:rotate(90deg)}.more:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.set{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:58px;padding:8px 12px 8px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--bd);user-select:none;transition:background-color .22s var(--ease),border-color .22s var(--ease)}
+.set-lbl{flex:1;min-width:0;cursor:pointer}
+.set b{display:block;font-weight:600;font-size:14px;color:var(--tx)}
+.set small{display:block;font-size:11px;color:var(--tx);opacity:.82}
+.set.on{background:rgba(200,243,29,.12);border-color:color-mix(in srgb,var(--ac) 45%,transparent)}
+html.light .set.on{background:rgba(92,138,0,.1)}
+.set.on b{color:var(--tx)}
+.set.on small{color:var(--tx);opacity:.82}
+.set-in{display:flex;align-items:center;gap:6px}
+.copy-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:36px;padding:0;border-radius:8px;border:1px solid var(--bd);background:var(--s2);color:var(--ac);cursor:pointer;flex:none;transition:background-color .16s var(--ease),border-color .16s var(--ease),transform .14s var(--ease)}
+.copy-btn:active{transform:scale(.92)}
+.copy-btn .i{width:14px;height:14px}
+.num-in{width:54px;height:36px;padding:0 6px;border-radius:8px;border:1px solid var(--bd);background:var(--s2);color:var(--tx);font:600 13px Archivo,sans-serif;text-align:center;transition:border-color .18s var(--ease),box-shadow .18s var(--ease),background-color .18s var(--ease)}
+.num-in::placeholder{color:var(--mu);font-weight:400}
+.num-in:focus{outline:2px solid var(--ac);border-color:transparent;box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 14%,transparent)}
+.set input[type=checkbox]{appearance:none;-webkit-appearance:none;width:32px;height:32px;margin:0;flex:none;border:2px solid var(--chk-bd);border-radius:50%;display:grid;place-content:center;cursor:pointer;transition:border-color .18s var(--ease),background-color .18s var(--ease),transform .18s var(--spring),box-shadow .18s var(--ease)}
+.set input[type=checkbox]:active{transform:scale(.9)}
+.set input[type=checkbox]:checked{background:var(--ac);border-color:var(--ac)}
+.set input[type=checkbox]:checked::after{content:"";width:7px;height:14px;border:solid var(--on);border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.tut-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tut{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid var(--bd);border-radius:8px;color:var(--ac);text-decoration:none;font-size:13px;font-weight:500;background:none;font-family:inherit;cursor:pointer;transition:border-color .18s var(--ease),background-color .18s var(--ease),transform .14s var(--ease)}.tut:active{transform:scale(.96)}.tut .i{width:13px;height:13px;fill:currentColor}
+.set input:focus-visible,.dy:focus-visible,.card:focus-visible,.eh:focus-visible,.pill:focus-visible,.btn:focus-visible,.tut:focus-visible,.back:focus-visible,summary:focus-visible,.copy-btn:focus-visible,.icon-btn:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+html,body{max-width:100%;overflow-x:hidden}
+.opt{display:block;width:100%;max-width:100%;margin-top:24px;border:1px solid var(--bd);border-radius:16px;background:var(--s1);transition:border-color .22s var(--ease)}
+.opt summary{display:flex;align-items:center;justify-content:space-between;min-height:56px;padding:0 18px;font-weight:700;font-size:15px;cursor:pointer;list-style:none;transition:color .18s var(--ease)}.opt summary::-webkit-details-marker{display:none}
+.opt summary .chev{color:var(--mu);transition:transform .24s var(--ease)}
+.opt[open] summary .chev{transform:rotate(90deg)}
+.opt[open] .in{animation:unfold .24s var(--ease) both}
+.opt .in{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:4px 18px 20px}
+.opt-grp{min-width:0;max-width:100%;padding:14px;border-radius:12px;background:color-mix(in srgb,var(--s2) 65%,var(--bg));border:1px solid var(--bd)}
+.opt-lbl{display:block;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--mu);margin:0 0 8px}
+.opt-desc{margin:8px 0 0;font-size:12.5px;color:var(--mu);line-height:1.4}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 14px;margin:0;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font:600 13px Archivo,sans-serif;cursor:pointer;text-align:center;transition:border-color .18s var(--ease),background-color .18s var(--ease),transform .14s var(--ease),box-shadow .18s var(--ease)}.btn:active{transform:scale(.97)}.btn .i{width:15px;height:15px;color:var(--ac)}
+.btn.dng{color:#ff9a8a;border-color:#5a3330}.btn.dng .i{color:currentColor}
+html.light .btn.dng{color:#c93b2b;border-color:#e5b3ad}
+html.light .opt-grp,
+html.light .btn,
+html.light .meta div,
+html.light .num-in,
+html.light .day-detail,
+html.light .cb,
+html.light .modal-x,
+html.light .seg,
+html.light .presets button,
+html.light .custom-time input,
+html.light .timer-pill button:not(.pri-sm):not(.x){background:#ffffff;border:1px solid var(--bd)}
+html.light .unit-seg,
+html.light .prog-seg{background:#ffffff;border:1px solid var(--bd)}
+html.light .unit-seg button.on,
+html.light .prog-seg button.on{background:color-mix(in srgb,var(--ac) 12%,#ffffff);border:1px solid color-mix(in srgb,var(--ac) 55%,var(--bd));box-shadow:none}
+html.light .set{background:#ffffff}
+html.light .run-grid input{background:#ffffff}
+
+.opt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.opt-actions .btn.full{grid-column:1/-1}
+.unit-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:10px;background:var(--bg);border:1px solid var(--bd)}
+.unit-seg button{height:36px;border:0;border-radius:7px;background:none;color:var(--mu);font:600 13px Archivo,sans-serif;cursor:pointer;transition:color .16s var(--ease),background-color .18s var(--ease),border-color .18s var(--ease),transform .14s var(--ease)}
+.unit-seg button:active{transform:scale(.97)}
+.unit-seg button.on{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.25);border:1px solid color-mix(in srgb,var(--ac) 40%,var(--bd))}
+.prog-seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;padding:4px;border-radius:10px;background:var(--bg);border:1px solid var(--bd)}
+.prog-seg button{min-height:40px;padding:8px 10px;border:1px solid transparent;border-radius:7px;background:none;color:var(--mu);font:600 13px Archivo,sans-serif;line-height:1.25;cursor:pointer;transition:color .16s var(--ease),background-color .18s var(--ease),border-color .18s var(--ease),transform .14s var(--ease);word-break:break-word}
+.prog-seg button:active{transform:scale(.97)}
+.prog-seg button.on{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.25);border-color:color-mix(in srgb,var(--ac) 45%,var(--bd))}
+.note{margin:0;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--ac) 12%,var(--s2));border:1px solid color-mix(in srgb,var(--ac) 35%,transparent);color:var(--tx);font-size:13px;font-weight:500}
+
+.bar0{display:flex;align-items:center;justify-content:space-between;min-height:44px;margin:-8px 0 8px}.brand{font-weight:700;font-size:14px;color:var(--mu)}
+.bar0-r{display:flex;align-items:center;gap:8px}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;border-radius:50%;border:1px solid var(--bd);background:var(--s1);color:var(--tx);cursor:pointer;transition:border-color .18s var(--ease),color .18s var(--ease),background-color .18s var(--ease),transform .14s var(--ease)}
+.icon-btn:active{transform:scale(.91)}
+.icon-btn.active{border-color:var(--ac);color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,var(--s1))}
+.icon-btn .i{width:17px;height:17px}
+.back{display:inline-flex;align-items:center;gap:4px;min-height:44px;margin-left:-4px;color:var(--mu);text-decoration:none;font-size:14px;font-weight:500;transition:color .18s var(--ease),transform .18s var(--ease)}.back .i{width:18px;height:18px;transition:transform .18s var(--ease)}.back:active{transform:scale(.96)}
+h1.ttl{font-size:26px;line-height:1.15;font-weight:800;margin:0 0 4px;letter-spacing:-.01em}
+h2.sec{font-size:18px;font-weight:700;margin:28px 0 4px}h2.sec+.sub{margin:0 0 14px}
+.sum{margin:20px 0 16px}.sum .pt{margin:0 0 8px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 20px}
+.stat-box{padding:10px 12px;border-radius:12px;background:var(--s1);border:1px solid var(--bd);transition:border-color .2s var(--ease),transform .2s var(--ease)}
+.stat-box span{display:block;font-size:11px;color:var(--mu)}
+.stat-box b{display:block;font-size:17px;font-weight:800;margin-top:2px;color:var(--tx)}
+.list{display:grid;gap:8px}
+.dayrow{display:grid;grid-template-columns:48px 1fr auto;column-gap:14px;align-items:center;width:100%;min-height:72px;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--s1);color:inherit;font:inherit;text-align:left;cursor:pointer;transition:transform .2s var(--ease),border-color .2s var(--ease),box-shadow .2s var(--ease)}
+.dayrow:not(.rest):active{transform:scale(.985)}
+.dayrow.rest{background:var(--s1);cursor:default;color:var(--mu)}
+.dno{display:grid;place-items:center;grid-row:1/3;width:48px;height:48px;border-radius:50%;background:var(--c);color:#0c0d0f;font-weight:800;font-size:20px;transition:transform .22s var(--spring)}.rest .dno{background:var(--s2);color:var(--mu)}
+.dayrow.rest .dno{grid-row:auto}
+.dtx{min-width:0}.dtx b{display:block;font-weight:700;font-size:16px;line-height:1.25}.dtx span{font-size:12px;color:var(--mu)}
+.dst{font-size:13px;font-weight:600;transition:color .2s var(--ease)}.dayrow.done .dst{color:var(--c)}
+html.light .dayrow.done .dst{color:color-mix(in srgb,var(--c) 75%,#000)}
+.dayrow .bar{grid-column:2/4;margin-top:8px}.dayrow .bar i{background:var(--c)}
+.dayrow:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+
+.sr{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.sr .pt{margin:0}
+.btn.sm{min-height:36px;padding:0 12px;margin:0;font-size:13px}
+.cal2{margin-top:24px;padding:16px;border:1px solid var(--bd);border-radius:14px;background:var(--s1)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.ch h2.sec{margin:0}
+.cb{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--s2);color:var(--tx);cursor:pointer;transition:background-color .18s var(--ease),transform .14s var(--ease)}.cb:active{transform:scale(.9)}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px 2px;text-align:center}.cg small{font-size:11px;color:var(--mu);padding-bottom:4px}
+.cd{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:46px;padding-top:4px;background:none;border:1px solid transparent;border-radius:10px;color:inherit;font:inherit;cursor:pointer;transition:background-color .16s var(--ease),border-color .18s var(--ease),transform .14s var(--ease)}
+.cd:active{transform:scale(.93)}.cd.sel{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent)}
+.cd b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;font-size:13px;font-weight:600;transition:transform .18s var(--spring)}.cd.td b{background:var(--ac);color:var(--on)}
+.cd em{display:flex;gap:3px;min-height:8px}.cd i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--c)}.cd i.f{background:var(--c)}
+.cal2 .sub{margin-top:10px}.cb:focus-visible,.cd:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.day-detail{margin-top:12px;padding:12px;border-radius:10px;background:var(--s2);border:1px solid var(--bd);font-size:13px}
+.day-detail h4{margin:0 0 6px;font-size:13px;color:var(--ac)}
+.day-detail ul{margin:0;padding-left:16px;color:var(--detail-tx)}
+
+.run-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.run-grid label{font-size:11px;color:var(--mu);display:block}
+.run-grid input{width:100%;height:38px;margin-top:4px;padding:0 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:500 14px Archivo,sans-serif;transition:border-color .18s var(--ease),box-shadow .18s var(--ease)}
+.run-grid input:focus{outline:2px solid var(--ac);border-color:transparent;box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 14%,transparent)}
+
+/* Clock Modal & Floating Pill */
+.modal-bg{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.58);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px;animation:fadeIn .18s var(--ease) both}
+.modal-bg.closing{animation:fadeOut .15s var(--ease) both;pointer-events:none}
+.modal-card{width:100%;max-width:340px;padding:20px;border-radius:20px;background:var(--s1);border:1px solid var(--bd);box-shadow:0 20px 50px rgba(0,0,0,.45);animation:modalIn .24s var(--ease) both}
+.modal-bg.closing .modal-card{animation:modalOut .15s var(--ease) both}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal-hd h3{margin:0;font-size:17px;font-weight:700}
+.modal-x{width:32px;height:32px;border-radius:50%;border:0;background:var(--s2);color:var(--mu);font-size:15px;cursor:pointer;display:grid;place-items:center;transition:background-color .16s var(--ease),color .16s var(--ease),transform .14s var(--ease)}.modal-x:active{transform:scale(.9)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:var(--s2);margin-bottom:16px}
+.seg button{height:34px;border:0;border-radius:9px;background:none;color:var(--mu);font:600 13px Archivo,sans-serif;cursor:pointer;transition:color .16s var(--ease),background-color .18s var(--ease)}
+.seg button.on{background:var(--s1);color:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.presets{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.presets button{height:38px;border-radius:10px;border:1px solid var(--bd);background:var(--s2);color:var(--tx);font:600 13px Archivo,sans-serif;cursor:pointer;transition:border-color .16s var(--ease),color .16s var(--ease),transform .14s var(--ease)}.presets button:active{transform:scale(.94)}
+.custom-time{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.custom-time label{font-size:11px;color:var(--mu);display:block}
+.custom-time input{width:100%;height:40px;margin-top:4px;padding:0 10px;border-radius:10px;border:1px solid var(--bd);background:var(--s2);color:var(--tx);font:700 15px Archivo,sans-serif;text-align:center;transition:border-color .18s var(--ease),box-shadow .18s var(--ease)}
+.custom-time input:focus{outline:2px solid var(--ac);border-color:transparent}
+
+.timer-pill{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:8px;padding:8px 12px 8px 15px;border-radius:999px;background:var(--s1);border:1px solid var(--ac);box-shadow:0 10px 30px rgba(0,0,0,.35);color:var(--tx);font-size:13px;white-space:nowrap;transition:border-color .25s var(--ease),box-shadow .25s var(--ease)}
+.timer-pill.pill-in{animation:pillIn .26s var(--ease) both}
+.timer-pill.pill-out{animation:pillOut .16s var(--ease) both;pointer-events:none}
+.timer-pill.pill-done{animation:pillPulse 1.1s var(--ease) 2;box-shadow:0 10px 32px color-mix(in srgb,var(--ac) 38%,rgba(0,0,0,.4))}
+.timer-pill .tag{font-size:11px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
+.timer-pill b{font-variant-numeric:tabular-nums;font-size:18px;color:var(--ac);min-width:54px;text-align:center}
+.timer-pill button{height:32px;padding:0 10px;border-radius:999px;border:1px solid var(--bd);background:var(--s2);color:var(--tx);font:600 12px Archivo,sans-serif;cursor:pointer;transition:transform .12s var(--ease),background-color .16s var(--ease),border-color .16s var(--ease)}.timer-pill button:active{transform:scale(.93)}
+.timer-pill button.pri-sm{background:var(--ac);color:var(--on);border-color:var(--ac)}
+.timer-pill button.x{background:none;border:0;color:var(--mu);padding:0 6px;font-size:16px}
+
+.lo{min-height:44px;padding:0;background:none;border:0;color:var(--mu);font:inherit;font-size:13px;cursor:pointer;transition:color .18s var(--ease)}.lo:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.lg{padding-top:10vh}.fl{display:block;margin-top:18px;font-size:13px;color:var(--mu)}
+.fl input{display:block;width:100%;min-height:48px;margin-top:6px;padding:0 14px;border:1px solid var(--bd);border-radius:10px;background:var(--s1);color:var(--tx);font:inherit;font-size:16px}
+.btn.pri{width:100%;justify-content:center;min-height:48px;margin:22px 0 0;background:var(--ac);color:var(--on);border-color:var(--ac);font-weight:600}
+.err{margin:14px 0 0;color:#ff9a8a;font-size:13px}
+html.light .err{color:#c93b2b}
+
+:root{--g1:#ff7a45;--g2:#4da3ff;--g3:#b277ff;--g4:#2fd6a0}
+body{background:none;isolation:isolate}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(70% 38% at 8% -4%,color-mix(in srgb,var(--g1) 38%,transparent),transparent 72%),radial-gradient(60% 40% at 104% 18%,color-mix(in srgb,var(--g2) 30%,transparent),transparent 72%),radial-gradient(75% 42% at -6% 104%,color-mix(in srgb,var(--g3) 26%,transparent),transparent 72%),radial-gradient(65% 40% at 104% 106%,color-mix(in srgb,var(--g4) 24%,transparent),transparent 72%);transition:opacity .35s var(--ease)}
+html.light body::before{opacity:.42}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:34px 34px;-webkit-mask-image:linear-gradient(to bottom,#000,transparent 75%);mask-image:linear-gradient(to bottom,#000,transparent 75%)}
+.dayrow{background:linear-gradient(135deg,color-mix(in srgb,var(--c) 20%,var(--s1)),var(--s1) 62%);border-color:color-mix(in srgb,var(--c) 30%,var(--bd))}
+.dayrow.rest{background:linear-gradient(135deg,color-mix(in srgb,var(--c) 18%,var(--s1)),var(--s1) 62%);border-color:color-mix(in srgb,var(--c) 28%,var(--bd))}
+.dno{background:linear-gradient(145deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 75%,#000))}
+.cal{background:linear-gradient(150deg,color-mix(in srgb,var(--ac) 26%,var(--s1)),var(--s1) 70%);border-color:color-mix(in srgb,var(--ac) 28%,var(--bd))}
+.cal2,.opt{background:linear-gradient(150deg,color-mix(in srgb,var(--g1) 14%,var(--s1)),var(--s1) 55%,color-mix(in srgb,var(--g4) 10%,var(--s1)))}
+.ex{background:linear-gradient(145deg,color-mix(in srgb,var(--ac) 11%,var(--s1)),var(--s1) 55%);border-color:color-mix(in srgb,var(--ac) 18%,var(--bd))}
+.ex.done{background:linear-gradient(145deg,color-mix(in srgb,var(--ac) 24%,var(--s1)),var(--s1) 80%);border-color:color-mix(in srgb,var(--ac) 50%,transparent)}
+.dy.on span{background:linear-gradient(145deg,color-mix(in srgb,var(--c) 65%,#fff),var(--c))}
+.bar i{background:linear-gradient(90deg,color-mix(in srgb,var(--c,var(--ac)) 65%,var(--tx)),var(--c,var(--ac)))}
+.dayrow .bar i{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 65%,#000),var(--c))}
+.sum .bar i{background:linear-gradient(90deg,var(--g1),var(--g2))}
+.set.on{background:linear-gradient(90deg,color-mix(in srgb,var(--ac) 24%,transparent),color-mix(in srgb,var(--ac) 8%,transparent))}
+.set input[type=checkbox]:checked,.done .no,.cd.td b{background:linear-gradient(145deg,color-mix(in srgb,var(--ac) 65%,#fff),var(--ac))}
+
+.lf{display:grid;gap:8px;margin-top:26px}
+.pi,.eye{border:1px solid color-mix(in srgb,var(--g1) 22%,var(--bd));background:linear-gradient(135deg,color-mix(in srgb,var(--g1) 14%,var(--s1)),var(--s1) 70%);transition:border-color .2s var(--ease),box-shadow .2s var(--ease),color .18s var(--ease)}
+.pi{display:block;width:100%;min-height:56px;padding:0 24px;border-radius:999px;color:var(--tx);font:inherit;font-size:16px}
+.pi::placeholder{color:var(--mu)}
+.prow{display:grid;grid-template-columns:1fr 64px;gap:6px}
+.prow .pi{border-radius:999px 14px 14px 999px}
+.eye{display:grid;place-items:center;border-radius:14px 999px 999px 14px;color:var(--mu);cursor:pointer}
+.eye:active{transform:scale(.95)}
+.pi:focus,.pi:focus-visible{outline:none;border-color:color-mix(in srgb,var(--g1) 65%,var(--bd));box-shadow:0 0 0 3px color-mix(in srgb,var(--g1) 16%,transparent)}
+.eye:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.btn.pri{min-height:56px;margin-top:20px;border-radius:999px;border-color:var(--ac);background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 65%,#fff),var(--ac));color:var(--on);font-weight:600}
+
+/* Hover polish scoped to pointer devices */
+@media (hover:hover){
+ .dayrow:not(.rest):hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--c) 55%,var(--bd));box-shadow:0 8px 22px -10px color-mix(in srgb,var(--c) 40%,transparent)}
+ .dayrow:not(.rest):hover .dno{transform:scale(1.05)}
+ .ex:hover{border-color:color-mix(in srgb,var(--ac) 34%,var(--bd))}
+ .ex.done:hover{border-color:color-mix(in srgb,var(--ac) 62%,transparent)}
+ .eh:not(.static):hover{background:color-mix(in srgb,var(--ac) 4%,transparent)}
+ .dy:not(.on):hover span{transform:scale(1.08);background:var(--s2)}
+ .btn:hover{border-color:color-mix(in srgb,var(--ac) 50%,var(--bd))}
+ html.light .btn:hover{background:color-mix(in srgb,var(--ac) 8%,#ffffff)}
+ .btn.pri:hover{filter:brightness(1.05);box-shadow:0 8px 22px -8px color-mix(in srgb,var(--ac) 55%,transparent)}
+ .icon-btn:hover{border-color:color-mix(in srgb,var(--ac) 55%,var(--bd));color:var(--ac)}
+ .copy-btn:hover{background:color-mix(in srgb,var(--ac) 16%,var(--s2));border-color:color-mix(in srgb,var(--ac) 45%,var(--bd))}
+ .set input[type=checkbox]:not(:checked):hover{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 14%,transparent)}
+ .tut:hover{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent)}
+ .back:hover{color:var(--tx)}.back:hover .i{transform:translateX(-2px)}
+ .lo:hover,.more:hover{color:var(--tx)}
+ .cb:hover{background:color-mix(in srgb,var(--ac) 16%,var(--s2));color:var(--ac)}
+ .cd:hover{background:rgba(128,128,128,.09)}
+ .presets button:hover{border-color:var(--ac);color:var(--ac)}
+ .timer-pill button:not(.pri-sm):not(.x):hover{border-color:var(--ac)}
+ .timer-pill button.x:hover{color:var(--tx)}
+ .stat-box:hover{border-color:color-mix(in srgb,var(--g1) 35%,var(--bd))}
+}
+
+/* Keyframes & Targeted Animation Classes */
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes unfold{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes chkPop{0%{transform:scale(.82)}55%{transform:scale(1.16)}100%{transform:scale(1)}}
+@keyframes noPop{0%{transform:scale(.85);box-shadow:0 0 0 0 color-mix(in srgb,var(--ac) 60%,transparent)}55%{transform:scale(1.12)}100%{transform:scale(1);box-shadow:0 0 0 10px transparent}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes modalOut{from{opacity:1;transform:scale(1) translateY(0)}to{opacity:0;transform:scale(.96) translateY(6px)}}
+@keyframes pillIn{from{opacity:0;transform:translateX(-50%) translateY(18px) scale(.95)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes pillOut{from{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}to{opacity:0;transform:translateX(-50%) translateY(14px) scale(.95)}}
+@keyframes pillPulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.04)}}
+@keyframes calInL{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes calInR{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+.anim-view{animation:viewIn .28s var(--ease) both}
+.anim-view .stat-box{animation:viewIn .28s var(--ease) both}
+.anim-view .stat-box:nth-child(2){animation-delay:30ms}
+.anim-view .stat-box:nth-child(3){animation-delay:60ms}
+.anim-view .list .dayrow{animation:viewIn .3s var(--ease) both}
+.anim-view .list .dayrow:nth-child(1){animation-delay:20ms}
+.anim-view .list .dayrow:nth-child(2){animation-delay:42ms}
+.anim-view .list .dayrow:nth-child(3){animation-delay:64ms}
+.anim-view .list .dayrow:nth-child(4){animation-delay:86ms}
+.anim-view .list .dayrow:nth-child(5){animation-delay:108ms}
+.anim-view .list .dayrow:nth-child(6){animation-delay:130ms}
+.anim-view .list .dayrow:nth-child(7){animation-delay:152ms}
+.anim-unfold{animation:unfold .22s var(--ease) both}
+.chk-pop{animation:chkPop .28s var(--spring) both}
+.no-pop{animation:noPop .42s var(--ease) both}
+.cal-in-l{animation:calInL .2s var(--ease) both}
+.cal-in-r{animation:calInR .2s var(--ease) both}
+.anim-err{animation:nudge .26s var(--ease) both}
+
+@media (prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style></head><body>
+<main id="app"></main>
+<div id="clock-modal"></div>
+<div id="timer-root"></div>
+<script>
+// Dynamic Installable PWA Manifest & Home Screen Icon (Blob URL)
+(function initPWA(){
+ try{
+  const svgIcon=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#0c0d0f"/><rect x="24" y="24" width="464" height="464" rx="92" fill="none" stroke="#ff7a45" stroke-width="14" stroke-opacity="0.35"/><g fill="none" stroke="#ff7a45" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M138 156v200M374 156v200M82 204v104M430 204v104M138 256h236"/></g></svg>`;
+  const iconUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgIcon);
+  const iconLink=document.getElementById('pwa-icon');
+  if(iconLink)iconLink.href=iconUrl;
+  const manifest={
+   name:'Gym Tracker',
+   short_name:'Gym Tracker',
+   description:'Weekly strength, run, and core workout tracker',
+   start_url:location.href.split('#')[0],
+   display:'standalone',
+   background_color:'#0c0d0f',
+   theme_color:'#0c0d0f',
+   orientation:'portrait',
+   icons:[{src:iconUrl,sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]
+  };
+  const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  const mLink=document.getElementById('pwa-manifest');
+  if(mLink)mLink.href=URL.createObjectURL(mBlob);
+ }catch(e){}
+})();
+
+const CSV={w14:"﻿Block,Day,Workout,Exercise,Target Muscle,Sets,Reps,Reps to Failure,Rest,Form Notes,Video Tutorial\nWeeks 1-4 (Modified Strength Base),Day 1,Lower Body #1,Back Squat,\"Quads, Glutes\",3,6,3 reps from failure,3-4 min,\"Sit back and down, 15° toe flare, drive your knees out laterally.\",https://www.youtube.com/watch?v=bEv6CCg2BC8\nWeeks 1-4 (Modified Strength Base),Day 1,Lower Body #1,Romanian Deadlift,\"Hamstrings, Glutes\",3,10,3 reps from failure,2-3 min,\"Maintain a neutral lower back, set your hips back, don't allow your spine to round.\",https://www.youtube.com/watch?v=_oyxCn2iSjU\nWeeks 1-4 (Modified Strength Base),Day 1,Lower Body #1,Barbell Hip Thrust,Glutes,3,12,2 reps from failure,2-3 min,\"Tuck your chin and rib cage down, only move your hips. Use a pad on the bar across your bench.\",https://www.youtube.com/watch?v=xDmFkJxPzeM\nWeeks 1-4 (Modified Strength Base),Day 1,Lower Body #1,Leg Extension,Quads,3,12,1 rep from failure,1-2 min,Focus on squeezing your quads to make the weight move.,https://www.youtube.com/watch?v=ljO4jkwv8wQ\nWeeks 1-4 (Modified Strength Base),Day 1,Lower Body #1,Lying Leg Curl (or Seated),Hamstrings,3,12,1 rep from failure,1-2 min,Focus on squeezing your hamstrings to make the weight move.,https://www.youtube.com/watch?v=Lh3iMIcbkBQ\nWeeks 1-4 (Modified Strength Base),Day 1,Lower Body #1,Side-Lying Dumbbell Hip Abduction,Upper Glutes,3,12/side,3 reps from failure,1-2 min,\"Lie on your side on the floor/bench, hold a dumbbell on your outer thigh, and raise your top leg with a straight knee.\",https://www.youtube.com/watch?v=-rDiQXjeXO0\nWeeks 1-4 (Modified Strength Base),Day 1,Lower Body #1,Crunch,Abs,3,12,3 reps from failure,1-2 min,\"Focus on flexing your spine, don't yank your head with your arms.\",https://www.youtube.com/watch?v=1G0y8D5rFDc\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Barbell Bench Press,\"Chest, Triceps\",3,5,3 reps from failure,3-4 min,\"Tuck elbows at a 45° angle, squeeze your shoulder blades and stay firm on the bench.\",https://www.youtube.com/watch?v=vcBig73ojpE\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Lat Pulldown,Lats,3,10,2 reps from failure,2-3 min,\"Pull your elbows straight out to your sides, use a 1.5x shoulder width grip.\",https://www.youtube.com/watch?v=hnSqbBk15tw\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Military Press,Front Delts,3,10,3 reps from failure,3-4 min,\"Squeeze your glutes to keep your torso upright, clear your head out of the way, press up and slightly back.\",https://www.youtube.com/watch?v=_RlRDWO2jfg\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Chest-Supported Dumbbell Row,\"Mid-Back, Mid/Lower Traps\",3,12,2 reps from failure,2-3 min,Lie chest-down on a 30-45° incline bench (or brace one hand on a flat bench); retract shoulder blades at the top.,https://www.youtube.com/watch?v=2ByilQ4NaAs\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Dumbbell Flye,Chest,3,12,2 reps from failure,1-2 min,\"Keep shoulder blades retracted and elbows slightly bent; lower until upper arms are level with the bench, then squeeze together.\",https://www.youtube.com/watch?v=QENKPHhQVi4\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Barbell Shrug,Upper Traps,3,10-12,2 reps from failure,1-2 min,\"Stand tall with a slight forward torso lean, pull shoulders straight up toward your ears without rolling them, pause 1 sec at the top.\",https://www.youtube.com/watch?v=C6sYjDFuq9I\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Dumbbell Supinated Curl,Biceps,3,10,2 reps from failure,1-2 min,Drive your pinky into the handle harder than your pointer finger.,https://www.youtube.com/watch?v=i1YgFZB6alI\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Single-Arm Dumbbell Overhead Extension,Triceps,3,12,2 reps from failure,1-2 min,\"Sit upright on the bench, keep your upper arm locked near your ear, and lower the dumbbell behind your head for a full stretch.\",https://www.youtube.com/watch?v=b_r_LW4HEcM\nWeeks 1-4 (Modified Strength Base),Day 2,Upper Body #1,Lying Neck Curl,Neck (Front / Flexors),3,15-20,2 reps from failure,1-2 min,Lie on your back on the bench with head off the edge; gently hold a light plate/dumbbell with a folded towel on your forehead and tuck chin to chest smoothly.,https://www.youtube.com/watch?v=r_yLxDo9h_k\nWeeks 1-4 (Modified Strength Base),Day 3,Lower Body #2,Deadlift,Posterior Chain,3,8,3 reps from failure,3-4 min,\"Brace your lats, chest tall, hips high, pull the slack out of the bar prior to moving it off the ground.\",https://www.youtube.com/watch?v=VL5Ab0T07e4\nWeeks 1-4 (Modified Strength Base),Day 3,Lower Body #2,Dumbbell Walking Lunge,\"Quads, Glutes\",3,10/leg,2 reps from failure,2-3 min,\"10 steps each leg. Take medium strides, let your torso lean forward.\",https://www.youtube.com/watch?v=Pbmj6xPo-Hw\nWeeks 1-4 (Modified Strength Base),Day 3,Lower Body #2,Single-Leg Leg Extension,Quads,3,15,2 reps from failure,1-2 min,Focus on squeezing your quads to make the weight move.,https://www.youtube.com/watch?v=ztNBgrGy6FQ\nWeeks 1-4 (Modified Strength Base),Day 3,Lower Body #2,Single-Leg Lying Leg Curl (or Seated),Hamstrings,3,15,2 reps from failure,1-2 min,Focus on squeezing your hamstrings to make the weight move.,https://www.youtube.com/watch?v=i6m3Vp9H40Y\nWeeks 1-4 (Modified Strength Base),Day 3,Lower Body #2,Side-Lying Dumbbell Hip Abduction,Upper Glutes,3,15/side,1 rep from failure,1-2 min,Keep hips stacked vertically; squeeze your upper glute at the top of each rep without swinging.,https://www.youtube.com/watch?v=-rDiQXjeXO0\nWeeks 1-4 (Modified Strength Base),Day 3,Lower Body #2,Single-Leg Dumbbell Calf Raise (off a step),Calves,3,12-15/leg,2 reps from failure,1-2 min,\"Stand on a step/plate holding one dumbbell; lower heel into a deep 2-sec stretch at the bottom, press all the way up onto toes without bouncing.\",https://www.youtube.com/watch?v=1_B7pkicFk8\nWeeks 1-4 (Modified Strength Base),Day 3,Lower Body #2,Plank,Core,3,20 sec,2 reps from failure,1-2 min,\"Squeeze your glutes, keep your hips low.\",https://www.youtube.com/watch?v=v25dawSzRTM\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Dumbbell Incline Press (or Flat if bench is fixed),Upper Chest,3,8,2 reps from failure,2-3 min,Keep your scapulae retracted and depressed.,https://www.youtube.com/watch?v=-iWjdKWNpNg\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Reverse Grip Lat Pulldown,\"Lats, Biceps\",3,8,2 reps from failure,2-3 min,\"Pull your elbows down against your sides, use shoulder width underhand grip.\",https://www.youtube.com/watch?v=O94yEoGXtBY\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Close-Grip Push-Up,\"Triceps, Lower/Mid Chest\",3,10-15,3 reps from failure,2-3 min,\"Hands just inside shoulder width, elbows tucked at ~30-45° against ribs; elevates feet on bench or add a weight plate on back if needed.\",https://www.youtube.com/watch?v=2eUBTgqK5Ng\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Barbell Bent Over Row,\"Mid-Back, Lats, Traps\",3,12,3 reps from failure,2-3 min,\"Lean your torso over at a 45° angle, keep your lower back neutral, double overhand grip.\",https://www.youtube.com/watch?v=axoeDmW0oAY\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Dumbbell Lateral Raise,Side Delts,3,15,2 reps from failure,1-2 min,Tilt the dumbbell such that your pinky comes up first.,https://www.youtube.com/watch?v=f_OGBg2KxgY\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Chest-Supported Dumbbell Rear Delt Flye,\"Rear Delts, Upper/Mid Traps\",3,15,2 reps from failure,1-2 min,Lie chest-down on an incline bench (or sit bent-over on a flat bench) and sweep dumbbells out and slightly back.,https://www.youtube.com/watch?v=sIQNCJ6Xwsk\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Dumbbell Shrug,Upper Traps,3,12-15,2 reps from failure,1-2 min,Hold dumbbells slightly in front of thighs with a subtle forward torso lean; shrug up and slightly back toward your ears.,https://www.youtube.com/watch?v=r74q9EF_ni4\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Hammer Curl,\"Biceps, Brachialis\",3,8,1 rep from failure,1-2 min,\"Neutral grip, prevent your upper arm from moving.\",https://www.youtube.com/watch?v=j5f_0rNkPwU\nWeeks 1-4 (Modified Strength Base),Day 4,Upper Body #2,Lying Neck Extension,Neck (Back / Extensors),3,15-20,2 reps from failure,1-2 min,Lie face-down on the bench with head off the edge; use controlled bodyweight or gently hold a light towel-wrapped plate on the back of your head.,https://www.youtube.com/watch?v=3-yAPkua_cA\n",w58:"﻿Block,Day,Workout,Exercise,Target Muscle,Sets,Reps,Reps to Failure,Rest,Form Notes,Video Tutorial\r\nWeeks 5-8 (Modified Strength Base),Day 1,Lower Body #1,Deadlift,Posterior Chain,3,5,2 reps from failure,3-4 min,\"Brace your lats, chest tall, hips high, pull the slack out of the bar prior to moving it off the ground.\",https://www.youtube.com/watch?v=VL5Ab0T07e4\r\nWeeks 5-8 (Modified Strength Base),Day 1,Lower Body #1,Goblet Squat,\"Quads, Glutes\",3,12,2 reps from failure,2-3 min,\"Hold a dumbbell directly underneath your chin, sit back and down, push your knees out laterally.\",https://www.youtube.com/watch?v=lRYBbchqxtI\r\nWeeks 5-8 (Modified Strength Base),Day 1,Lower Body #1,Dumbbell Single-Leg Hip Thrust,Glutes,3,10,1 rep from failure,2-3 min,\"Place the dumbbell on your working thigh, tuck your chin and rib cage, only move your hips.\",https://www.youtube.com/watch?v=L4nTaesNm0E\r\nWeeks 5-8 (Modified Strength Base),Day 1,Lower Body #1,Dumbbell Bulgarian Split Squat,\"Quads, Glutes\",3,12/leg,2 reps from failure,1-2 min,\"Rear foot elevated on your bench, hold dumbbells at your sides, drop straight down into a deep knee bend.\",https://www.youtube.com/watch?v=uODWo4YqbT8\r\nWeeks 5-8 (Modified Strength Base),Day 1,Lower Body #1,Lying Leg Curl (or Seated),Hamstrings,3,15,1 rep from failure,1-2 min,Focus on squeezing your hamstrings to make the weight move.,https://www.youtube.com/watch?v=Lh3iMIcbkBQ\r\nWeeks 5-8 (Modified Strength Base),Day 1,Lower Body #1,Single-Leg Dumbbell Calf Raise (off a step),Calves,3,12-15/leg,2 reps from failure,1-2 min,\"Stand on a step/plate holding one dumbbell; pause in a full stretch at the bottom, press all the way up onto toes without bouncing.\",https://www.youtube.com/watch?v=1_B7pkicFk8\r\nWeeks 5-8 (Modified Strength Base),Day 1,Lower Body #1,Bicycle Crunch,\"Abs, Obliques\",3,12,2 reps from failure,1-2 min,\"Focus on flexing and rotating your spine, bring your left elbow to right knee, right elbow to left knee.\",https://www.youtube.com/watch?v=wpRI3xBhJmo\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Barbell Bench Press,\"Chest, Triceps\",3,8,2 reps from failure,3-4 min,\"Tuck elbows at a 45° angle, squeeze your shoulder blades and stay firm on the bench.\",https://www.youtube.com/watch?v=vcBig73ojpE\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Dumbbell Pullover (or Single-Arm Pulldown),Lats,3,8,2 reps from failure,2-3 min,\"Lie across/along the bench, lower a dumbbell behind your head for a deep lat stretch, then pull with straight elbows.\",https://www.youtube.com/watch?v=6yYVcIOAERY\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Dumbbell Seated Shoulder Press,Front Delts,3,12,3 reps from failure,2-3 min,\"Bring the dumbbell all the way down to your shoulders, keep your torso upright.\",https://www.youtube.com/watch?v=E9ShwbwZ1zw\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Dumbbell Row,\"Mid-Back, Lats, Traps\",3,12,2 reps from failure,2-3 min,\"Brace onto a bench for support, pull your elbow against your sides.\",https://www.youtube.com/watch?v=djKXLt7kv7Q\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Single-Arm Dumbbell Overhead Tricep Extension,Triceps (Long Head),3,10-12/arm,2 reps from failure,1-2 min,\"Sit upright on the bench, keep upper arm locked beside your head, lower dumbbell deep behind your neck for a full stretch.\",https://www.youtube.com/watch?v=b_r_LW4HEcM\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Barbell Shrug,Upper Traps,3,10-Dec,2 reps from failure,1-2 min,\"Slight forward lean, shrug straight up toward your ears with a 1-sec squeeze at the top; avoid rolling shoulders.\",https://www.youtube.com/watch?v=C6sYjDFuq9I\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Chest-Supported Dumbbell Rear Delt Flye,\"Rear Delts, Mid/Lower Traps\",3,15,1 rep from failure,1-2 min,Pull your arms back and out with palms facing down/back to target rear delts and mid-traps.,https://www.youtube.com/watch?v=sIQNCJ6Xwsk\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Barbell Curl,Biceps,3,12,1 rep from failure,1-2 min,Shoulder-width underhand grip; press your pinky into the bar harder than your pointer finger.,https://www.youtube.com/watch?v=QZEqB6wUPxQ\r\nWeeks 5-8 (Modified Strength Base),Day 2,Upper Body #1,Lying Neck Curl,Neck (Front / Flexors),3,15-20,2 reps from failure,1-2 min,Lie supine on the bench with head off the edge; hold a light plate/dumbbell wrapped in a towel on forehead and curl chin to chest smoothly.,https://www.youtube.com/watch?v=r_yLxDo9h_k\r\nWeeks 5-8 (Modified Strength Base),Day 3,Lower Body #2,Back Squat,\"Quads, Glutes\",3,8,2 reps from failure,3-4 min,\"Sit back and down, 15° toe flare, drive your knees out laterally.\",https://www.youtube.com/watch?v=bEv6CCg2BC8\r\nWeeks 5-8 (Modified Strength Base),Day 3,Lower Body #2,Barbell Hip Thrust,Glutes,3,8,2 reps from failure,2-3 min,\"Tuck your chin and rib cage down, only move your hips. Use a pad.\",https://www.youtube.com/watch?v=xDmFkJxPzeM\r\nWeeks 5-8 (Modified Strength Base),Day 3,Lower Body #2,Romanian Deadlift,\"Hamstrings, Glutes\",3,12,2 reps from failure,2-3 min,\"Maintain a neutral lower back, set your hips back, don't allow your spine to round.\",https://www.youtube.com/watch?v=_oyxCn2iSjU\r\nWeeks 5-8 (Modified Strength Base),Day 3,Lower Body #2,Seated Leg Curl (or Lying),Hamstrings,3,8,1 rep from failure,1-2 min,Focus on squeezing your hamstrings to make the weight move.,https://www.youtube.com/watch?v=xdbEG3xGLI8\r\nWeeks 5-8 (Modified Strength Base),Day 3,Lower Body #2,Single-Leg Dumbbell Calf Raise (off a step),Calves,3,15-20/leg,1 rep from failure,1-2 min,\"Stand on a step/plate holding one dumbbell; lower heel into a deep stretch at the bottom, press all the way up onto toes without bouncing.\",https://www.youtube.com/watch?v=1_B7pkicFk8\r\nWeeks 5-8 (Modified Strength Base),Day 3,Lower Body #2,Bench Reverse Crunch / Leg Raise,Lower Abs,3,10,2 reps from failure,1-2 min,\"Lie flat on the bench, grip the bench behind your head, and curl your hips/pelvis upward off the pad.\",https://www.youtube.com/watch?v=HoeOTXgNiXk\r\nWeeks 5-8 (Modified Strength Base),Day 3,Lower Body #2,Side-Lying Dumbbell Hip Abduction,Upper Glutes,3,20/side,1 rep from failure,1-2 min,Keep your hips stacked and focus on squeezing your upper glute to lift the weight.,https://www.youtube.com/watch?v=-rDiQXjeXO0\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Military Press,Front Delts,3,6,2 reps from failure,3-4 min,\"Squeeze your glutes to keep your torso upright, clear your head out of the way, press up and slightly back.\",https://www.youtube.com/watch?v=_RlRDWO2jfg\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Close-Grip Underhand Lat Pulldown,Lats,3,6,2 reps from failure,3-4 min,Palms facing you at shoulder width; pull your elbows tight against your sides to mimic a neutral-grip pull.,https://www.youtube.com/watch?v=5YC67yVpBGE\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Dumbbell Incline Press (or Flat if bench is fixed),Upper Chest,3,8,2 reps from failure,2-3 min,Keep your scapulae retracted and depressed.,https://www.youtube.com/watch?v=-iWjdKWNpNg\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Chest-Supported Dumbbell Row (Neutral Grip),\"Mid-Back, Lats, Traps\",3,8,1 rep from failure,2-3 min,Palms facing each other (neutral grip); let your shoulder blades protract at the bottom of each rep.,https://www.youtube.com/watch?v=ro2vfHfD0DQ\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Leaning Single-Arm Dumbbell Lateral Raise,Side Delts,3,12/arm,2 reps from failure,1-2 min,\"Hold the lat pulldown frame with your free hand, lean your body away at ~20°, and raise the dumbbell out to your side.\",https://www.youtube.com/watch?v=qWif_7SOYpQ\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Chest-Supported Dumbbell Reverse Flye,\"Rear Delts, Mid/Lower Traps\",3,12,2 reps from failure,1-2 min,\"Protract your scapulae, sweep the dumbbells out and back without swinging.\",https://www.youtube.com/watch?v=sIQNCJ6Xwsk\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Dumbbell Shrug,Upper Traps,3,Dec-15,2 reps from failure,1-2 min,Hold dumbbells slightly in front of thighs with a subtle forward torso lean; shrug up and slightly back toward your ears.,https://www.youtube.com/watch?v=r74q9EF_ni4\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Incline Dumbbell Curl,Biceps (Long Head),3,15,1 rep from failure,1-2 min,Set bench to ~45-60° incline so your arms hang behind your torso for a deep stretch.,https://www.youtube.com/watch?v=DCe8f6vMe9A\r\nWeeks 5-8 (Modified Strength Base),Day 4,Upper Body #2,Lying Neck Extension,Neck (Back / Extensors),3,15-20,2 reps from failure,1-2 min,Lie face-down on the bench with head off the edge; use controlled bodyweight or gently hold a light towel-wrapped plate on the back of your head.,https://www.youtube.com/watch?v=3-yAPkua_cA\r\n",core:"﻿Block,Day,Workout,Exercise,Target Muscle,Sets,Reps,Reps to Failure,Rest,Form Notes,Video Tutorial\n360-Degree Core Routine (Weeks 1-8),2-3x / Week,Complete Core Workout,Bench Reverse Crunch / Leg Raise,Lower Abs (Spinal Flexion),3,10-15,2 reps from failure,60-90 sec,\"Lie flat on the bench, grip behind your head, and curl your pelvis/hips upward off the pad; lower slowly with control instead of swinging your legs.\",https://www.youtube.com/watch?v=HoeOTXgNiXk\n360-Degree Core Routine (Weeks 1-8),2-3x / Week,Complete Core Workout,Barbell Ab Rollout,Deep Core / Transverse Abdominis & Abs (Anti-Extension),3,8-12,2 reps from failure,90 sec,Kneel on a pad holding a barbell loaded with round plates; brace your abs and squeeze glutes to tuck your pelvis under so your lower back never sags as you roll forward.,https://www.youtube.com/watch?v=3C1TRMJveXo\n360-Degree Core Routine (Weeks 1-8),2-3x / Week,Complete Core Workout,Dumbbell Suitcase Carry,Obliques & Quadratus Lumborum (Anti-Lateral Flexion),3,30-40 sec/side,2 reps from failure,60 sec,\"Hold one heavy dumbbell at your side like a suitcase, keep your ribcage stacked over your pelvis, and walk slowly without leaning toward or away from the weight.\",https://www.youtube.com/watch?v=v8O0kNuvp_k\n360-Degree Core Routine (Weeks 1-8),2-3x / Week,Complete Core Workout,Weighted Crunch (Dumbbell or Plate),Upper Abs (Loaded Spinal Flexion),3,12-15,1 rep from failure,60-90 sec,\"Hold a dumbbell or plate against your upper chest/chin, exhale hard, and curl your ribcage toward your pelvis without pulling on your neck; progress weight over time.\",https://www.youtube.com/watch?v=1YSxi0qv3wg\n360-Degree Core Routine (Weeks 1-8),2-3x / Week,Complete Core Workout,Dumbbell Plank Pull-Through,Obliques & Transverse Abdominis (Anti-Rotation),3,10-12/side,2 reps from failure,60 sec,Set up in a high plank with feet slightly wider than hip-width; reach across underneath your torso to drag a dumbbell from one side to the other without letting your hips twist.,https://www.youtube.com/watch?v=iXtAv61NEIo\n360-Degree Core Routine (Weeks 1-8),2-3x / Week,Complete Core Workout,Tempo Bird Dog (2-Sec Pause),\"Erector Spinae, Multifidus & Glutes (Posterior Core)\",3,8-10/side,2 reps from failure,60 sec,\"On hands and knees with a neutral spine, extend opposite arm and leg straight out, pause for 2 full seconds while bracing your abs, and avoid arching your lower back.\",https://www.youtube.com/watch?v=QABW99qPiNM\n",logins:"# Approved logins. One per line, written as  username:password\n# Lines starting with # are ignored. Usernames are not case sensitive, passwords are.\ndemo:demo123\nfriend:letmein\n"};
+const SCHED=[{n:1,w:'Lower Body #1'},{n:2,w:'Upper Body #1'},{n:3,w:'Run / Core',run:'Run 1: HIIT'},{n:4,w:'Lower Body #2'},{n:5,w:'Upper Body #2'},{n:6,w:'Run / Core',run:'Run 2: Easy run'},{n:7,w:'Rest Day',rest:1}];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>(s||'').toLowerCase().replace(/\s+/g,' ').trim();
+const MO={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+const fixReps=s=>{let m=/^(\d+)-([A-Za-z]{3})$/.exec(s);if(m&&MO[m[2].toLowerCase()])return m[1]+'-'+MO[m[2].toLowerCase()];m=/^([A-Za-z]{3})-(\d+)$/.exec(s);if(m&&MO[m[1].toLowerCase()])return MO[m[1].toLowerCase()]+'-'+m[2];return s};
+function parseCSV(t){t=t.replace(/^\uFEFF/,'');const rows=[];let r=[],f='',q=false;
+ for(let i=0;i<t.length;i++){const c=t[i];
+  if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+  else if(c=='"')q=true;else if(c==','){r.push(f);f=''}
+  else if(c=='\n'||c=='\r'){if(c=='\r'&&t[i+1]=='\n')i++;r.push(f);f='';rows.push(r);r=[]}else f+=c}
+ if(f!==''||r.length){r.push(f);rows.push(r)}
+ const h=(rows.shift()||[]).map(x=>x.trim());
+ return rows.filter(r=>r.some(x=>x.trim())).map(r=>{const o=Object.fromEntries(h.map((k,i)=>[k,(r[i]==null?'':r[i]).trim()]));o.Reps=fixReps(o.Reps||'');return o})}
+
+const KEY='gymtracker.v1',SESS=KEY+'.session',THEME_KEY=KEY+'.theme',USERS={};
+function buildUsers(){for(const k in USERS)delete USERS[k];CSV.logins.replace(/^\uFEFF/,'').split(/\r?\n/).forEach(l=>{l=l.trim();if(!l||l[0]=='#')return;const m=/^([^\s:,=;]+)\s*[:,=;\s]\s*(.+)$/.exec(l);if(m)USERS[m[1].toLowerCase()]=m[2].trim()})}buildUsers();
+const LIVE=true;
+
+// Theme management (dark default, toggleable to light)
+let THEME='dark';
+try{THEME=localStorage.getItem(THEME_KEY)||'dark'}catch(e){}
+function applyTheme(t,animate){
+ THEME=t==='light'?'light':'dark';
+ if(animate){
+  document.documentElement.classList.add('theme-xf');
+  clearTimeout(applyTheme._t);
+  applyTheme._t=setTimeout(()=>document.documentElement.classList.remove('theme-xf'),320);
+ }
+ document.documentElement.classList.toggle('light',THEME==='light');
+ const metaTheme=document.querySelector('meta[name="theme-color"]');
+ if(metaTheme)metaTheme.content=THEME==='light'?'#f5f6f8':'#0c0d0f';
+ try{localStorage.setItem(THEME_KEY,THEME)}catch(e){}
+}
+applyTheme(THEME,false);
+
+const ckSafe=s=>s.replace(/[^a-z0-9]/gi,c=>'_'+c.charCodeAt(0).toString(16));
+function ckSet(n,v,days){try{document.cookie=n+'='+v+';max-age='+(days*86400)+';path=/'+(location.protocol=='https:'?';SameSite=Lax;Secure':';SameSite=Lax')}catch(e){}}
+function ckGet(n){try{const m=document.cookie.split('; ').find(x=>x.startsWith(n+'='));return m?m.slice(n.length+1):null}catch(e){return null}}
+function ckSave(u,o){const b='gt.'+ckSafe(u)+'.',enc=encodeURIComponent(JSON.stringify(o)),old=+ckGet(b+'n')||0,n=Math.ceil(enc.length/3500);
+ if(n>6)return;
+ for(let i=0;i<n;i++)ckSet(b+i,enc.slice(i*3500,(i+1)*3500),365);for(let i=n;i<old;i++)ckSet(b+i,'',0);ckSet(b+'n',n,365)}
+function ckLoad(u){const b='gt.'+ckSafe(u)+'.',n=+ckGet(b+'n')||0;if(!n)return null;let s='';for(let i=0;i<n;i++){const p=ckGet(b+i);if(p==null)return null;s+=p}try{return JSON.parse(decodeURIComponent(s))}catch(e){return null}}
+
+const DEF=()=>({prog:'w14',day:1,unit:'kg',done:{},weights:{},prevWeights:{},best1rm:{},runs:{},log:{},hist:{}});
+let USER=null,S=DEF(),loginU='',loginErr='';
+function load(u){let r=null;try{r=localStorage.getItem(KEY+'.u.'+u);if(!r&&localStorage.getItem(KEY)){r=localStorage.getItem(KEY);localStorage.removeItem(KEY)}}catch(e){}
+ try{if(r)return JSON.parse(r)||{}}catch(e){}return ckLoad(u)||{}}
+function enter(u){USER=u;S=Object.assign(DEF(),load(u));try{localStorage.setItem(SESS,u)}catch(e){}ckSet('gt_session',encodeURIComponent(u),365)}
+function save(){if(!USER)return;try{localStorage.setItem(KEY+'.u.'+USER,JSON.stringify(S))}catch(e){}ckSave(USER,{prog:S.prog,day:S.day,unit:S.unit,done:S.done,log:S.log})}
+{let u=null;try{u=localStorage.getItem(SESS)}catch(e){}if(!u)try{u=decodeURIComponent(ckGet('gt_session')||'')}catch(e){}if(u&&USERS[u]!==undefined)enter(u)}
+
+let note='',ask=false,optOpen=false,selDate=null;
+const OPEN=new Set(),OPEN2=new Set();
+let calY=new Date().getFullYear(),calM=new Date().getMonth();
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+
+// Transient animation triggers (fire once per interaction)
+let lastRouteKey=null,animEx=null,animMore=null,animChk=null,animDate=null,animCal=0,animAsk=false,animNote=false,animErr=false;
+
+// Manual Timer & Stopwatch State
+let clockModal=false,clockTab='timer',customMin=1,customSec=30;
+let clk={mode:null,running:false,endAt:0,remMs:0,startAt:0,elapsedMs:0,iv:null};
+
+function beep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();[0,.18,.36].forEach(d=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=880;g.gain.setValueAtTime(.18,ctx.currentTime+d);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d+.14);o.connect(g);g.connect(ctx.destination);o.start(ctx.currentTime+d);o.stop(ctx.currentTime+d+.15)});if(navigator.vibrate)navigator.vibrate([150,80,150])}catch(e){}}
+
+function fmtClock(ms){
+ const tot=Math.max(0,Math.ceil(ms/1000));
+ const m=Math.floor(tot/60),s=String(tot%60).padStart(2,'0');
+ return m+':'+s;
+}
+function fmtSw(ms){
+ const tot=Math.max(0,Math.floor(ms/1000));
+ const h=Math.floor(tot/3600),m=Math.floor((tot%3600)/60),s=String(tot%60).padStart(2,'0');
+ return h>0?`${h}:${String(m).padStart(2,'0')}:${s}`:`${m}:${s}`;
+}
+
+function tickClock(){
+ if(!clk.mode||!clk.running)return;
+ if(clk.mode==='timer'){
+  const rem=clk.endAt-Date.now();
+  if(rem<=0){
+   clk.remMs=0;clk.running=false;clearInterval(clk.iv);clk.iv=null;
+   beep();
+  }else{
+   clk.remMs=rem;
+  }
+ }else if(clk.mode==='sw'){
+  clk.elapsedMs=Date.now()-clk.startAt;
+ }
+ renderPill();
+}
+
+function startManualTimer(sec){
+ clearInterval(clk.iv);
+ clk={mode:'timer',running:true,endAt:Date.now()+sec*1000,remMs:sec*1000,startAt:0,elapsedMs:0,iv:null};
+ clk.iv=setInterval(tickClock,200);
+ closeClockModal();renderPill();render();
+}
+function startStopwatch(){
+ clearInterval(clk.iv);
+ clk={mode:'sw',running:true,endAt:0,remMs:0,startAt:Date.now(),elapsedMs:0,iv:null};
+ clk.iv=setInterval(tickClock,200);
+ closeClockModal();renderPill();render();
+}
+function toggleClockRun(){
+ if(!clk.mode)return;
+ if(clk.running){
+  clearInterval(clk.iv);clk.iv=null;clk.running=false;
+  if(clk.mode==='timer')clk.remMs=Math.max(0,clk.endAt-Date.now());
+  else clk.elapsedMs=Date.now()-clk.startAt;
+ }else{
+  if(clk.mode==='timer'){
+   if(clk.remMs<=0)return;
+   clk.endAt=Date.now()+clk.remMs;
+  }else{
+   clk.startAt=Date.now()-clk.elapsedMs;
+  }
+  clk.running=true;
+  clk.iv=setInterval(tickClock,200);
+ }
+ renderPill();
+}
+function adjustManualTimer(deltaSec){
+ if(clk.mode!=='timer')return;
+ if(clk.running){
+  clk.endAt=Math.max(Date.now()+1000,clk.endAt+deltaSec*1000);
+  clk.remMs=clk.endAt-Date.now();
+ }else{
+  clk.remMs=Math.max(0,clk.remMs+deltaSec*1000);
+ }
+ renderPill();
+}
+function resetStopwatch(){
+ if(clk.mode!=='sw')return;
+ clk.elapsedMs=0;
+ if(clk.running)clk.startAt=Date.now();
+ renderPill();
+}
+function closeClockPill(){
+ clearInterval(clk.iv);
+ clk={mode:null,running:false,endAt:0,remMs:0,startAt:0,elapsedMs:0,iv:null};
+ const pill=$('#timer-root .timer-pill');
+ if(pill){
+  pill.classList.remove('pill-in','pill-done');
+  pill.classList.add('pill-out');
+  setTimeout(()=>{if(!clk.mode)renderPill()},170);
+ }else renderPill();
+ render();
+}
+
+function renderPill(){
+ const root=$('#timer-root');if(!root)return;
+ if(!clk.mode){root.innerHTML='';return}
+ const done=clk.mode==='timer'&&clk.remMs<=0&&!clk.running;
+ const sig=clk.mode+'|'+(clk.running?1:0)+'|'+(done?1:0);
+ const existing=root.querySelector('.timer-pill');
+ if(existing&&existing.dataset.sig===sig){
+  const b=existing.querySelector('b');
+  if(b)b.textContent=clk.mode==='timer'?fmtClock(clk.remMs):fmtSw(clk.elapsedMs);
+  return;
+ }
+ const animCls=!existing?' pill-in':'';
+ const doneCls=done?' pill-done':'';
+ if(clk.mode==='timer'){
+  root.innerHTML=`<div class="timer-pill${animCls}${doneCls}" data-sig="${sig}" role="status" aria-live="polite"><span class="tag">${done?'Done':'Timer'}</span><b>${fmtClock(clk.remMs)}</b><button data-cact="t-sub">-15s</button><button data-cact="t-add">+15s</button>${done?'':`<button class="pri-sm" data-cact="toggle">${clk.running?'Pause':'Start'}</button>`}<button class="x" data-cact="close" aria-label="Close timer">✕</button></div>`;
+ }else{
+  root.innerHTML=`<div class="timer-pill${animCls}" data-sig="${sig}" role="status" aria-live="polite"><span class="tag">Stopwatch</span><b>${fmtSw(clk.elapsedMs)}</b><button class="pri-sm" data-cact="toggle">${clk.running?'Pause':'Start'}</button><button data-cact="sw-reset">Reset</button><button class="x" data-cact="close" aria-label="Close stopwatch">✕</button></div>`;
+ }
+}
+
+function closeClockModal(){
+ clockModal=false;
+ const bg=$('#clock-modal .modal-bg');
+ if(bg){
+  bg.classList.add('closing');
+  setTimeout(()=>{if(!clockModal)renderModal()},150);
+ }else renderModal();
+}
+
+function renderModal(tabSwitch){
+ const root=$('#clock-modal');if(!root)return;
+ if(!clockModal){root.innerHTML='';return}
+ const body=clockTab==='timer'
+  ?`<div class="${tabSwitch?'anim-unfold':''}"><div class="presets"><button data-preset="45">0:45</button><button data-preset="60">1:00</button><button data-preset="90">1:30</button><button data-preset="120">2:00</button><button data-preset="180">3:00</button><button data-preset="240">4:00</button><button data-preset="300">5:00</button><button data-preset="600">10:00</button></div>
+    <div class="custom-time"><label>Minutes<input id="c-min" type="number" min="0" max="180" value="${customMin}"></label><label>Seconds<input id="c-sec" type="number" min="0" max="59" value="${customSec}"></label></div>
+    <button class="btn pri" style="margin-top:0" data-cact="start-custom-timer">Start Timer</button></div>`
+  :`<div class="${tabSwitch?'anim-unfold':''}"><p class="sub" style="margin-bottom:16px">Track rest periods, planks, carries, or total workout duration with a floating stopwatch pill.</p>
+    <button class="btn pri" style="margin-top:0" data-cact="start-sw">Start Stopwatch</button></div>`;
+ const card=root.querySelector('.modal-card');
+ if(tabSwitch&&card){
+  card.innerHTML=`<div class="modal-hd"><h3>Timer &amp; Stopwatch</h3><button class="modal-x" data-cact="close-modal" aria-label="Close">✕</button></div><div class="seg"><button class="${clockTab==='timer'?'on':''}" data-ctab="timer">Timer</button><button class="${clockTab==='sw'?'on':''}" data-ctab="sw">Stopwatch</button></div>${body}`;
+  return;
+ }
+ root.innerHTML=`<div class="modal-bg" data-cact="modal-bg"><div class="modal-card" role="dialog" aria-modal="true" aria-label="Timer and Stopwatch"><div class="modal-hd"><h3>Timer &amp; Stopwatch</h3><button class="modal-x" data-cact="close-modal" aria-label="Close">✕</button></div><div class="seg"><button class="${clockTab==='timer'?'on':''}" data-ctab="timer">Timer</button><button class="${clockTab==='sw'?'on':''}" data-ctab="sw">Stopwatch</button></div>${body}</div></div>`;
+}
+
+// Wake Lock on workout view
+let wakeLock=null;
+async function syncWakeLock(){try{if(USER&&location.hash=='#workout'){if(!wakeLock&&'wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen')}else if(wakeLock){await wakeLock.release();wakeLock=null}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='visible')syncWakeLock()});
+
+// Epley 1RM & PR Helper
+const calc1RM=(w,r)=>{w=parseFloat(w);r=parseInt(r);if(!w||!r||w<=0||r<=0)return 0;return r===1?w:Math.round(w*(1+r/30)*10)/10};
+function checkPR(exName,w,r){const e1rm=calc1RM(w,r);if(!e1rm)return false;const prev=S.best1rm[exName]||0;if(e1rm>prev){S.best1rm[exName]=e1rm;return prev>0}return false}
+
+function progs(){const l=[{id:'w14',csv:CSV.w14},{id:'w58',csv:CSV.w58}];if(S.custom)l.push({id:'custom',csv:S.custom.csv,file:S.custom.name});
+ return l.map(p=>{const rows=parseCSV(p.csv);return Object.assign(p,{rows,name:(rows[0]&&rows[0].Block)||p.file||p.id})})}
+
+function model(){const P=progs(),p=P.find(x=>x.id==S.prog)||P[0],core=parseCSV(S.core?S.core.csv:CSV.core),dn=S.done[p.id]||{},wt=S.weights[p.id]||{},pwt=S.prevWeights[p.id]||{},rn=(S.runs[p.id]||{});let placed=0,T=0,D=0,vol=0;
+ const days=SCHED.map(d=>{if(d.rest)return d;const g=[];
+  if(d.run){g.push({title:'Run / Core',rows:p.rows.filter(r=>norm(r.Workout)=='run / core'&&(!/^day\s*\d+$/i.test(r.Day)||norm(r.Day)=='day '+d.n))});
+   g.push({title:(core[0]&&core[0].Workout)||'Core',rows:core,core:1})}
+  else g.push({title:d.w,rows:p.rows.filter(r=>norm(r.Workout)==norm(d.w))});
+  let total=0,done=0,count=0;
+  const groups=g.filter(x=>x.rows.length).map((x,gi)=>{x.ex=x.rows.map((r,i)=>{
+   const sets=Math.max(1,parseInt(r.Sets)||1),key=d.n+'.'+gi+'.'+i+'.'+r.Exercise,arr=dn[key]||[],wArr=wt[key]||[],pwArr=pwt[key]||[];
+   let c=0,hasPR=false;
+   for(let j=0;j<sets;j++){
+    if(arr[j]){c++;const entry=wArr[j]||{};const wVal=parseFloat(entry.w)||0,rVal=parseInt(entry.r)||(parseInt(r.Reps)||0);if(wVal>0&&rVal>0)vol+=wVal*rVal;if(wVal>0&&(S.best1rm[r.Exercise]||0)>0&&calc1RM(wVal,rVal)>=(S.best1rm[r.Exercise]||0))hasPR=true}
+   }
+   total+=sets;done+=c;count++;return{r,sets,key,arr,wArr,pwArr,done:c,hasPR}});if(!x.core)placed+=x.rows.length;return x});
+  T+=total;D+=done;
+  const runMeta=rn['run'+d.n]||{};
+  return Object.assign({},d,{groups,total,done,count,runOn:!!(dn['run'+d.n]||[])[0],runMeta})});
+ return{P,p,days,core,placed,total:T,done:D,vol:Math.round(vol)}}
+
+const pc=(a,b)=>b?Math.round(100*a/b):0;
+const IC={dumb:'<path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11"/>',pulse:'<path d="M3 12h4l2.5-6 4 12 2.5-6H21"/>',moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6M12 2v3"/>',back:'<path d="M15 5l-7 7 7 7"/>',next:'<path d="M9 5l7 7-7 7"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',rep:'<path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/>',flame:'<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 .3 1.5 1 2 2 2 0-3-1-5 1-8z"/>',target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>',sets:'<path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/>',up:'<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>',down:'<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>',fill:'<path d="M12 5v14M7 14l5 5 5-5"/>',reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>'};
+IC.eye='<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>';IC.eyeoff='<path d="M3 3l18 18M9.9 5.2A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.3 4.2M6.5 6.8A17 17 0 0 0 2 12s3.5 7 10 7a9.6 9.6 0 0 0 4.1-.9"/>';
+const ic=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n]}</svg>`;
+const clockBtnHtml=()=>`<button class="icon-btn${clk.mode?' active':''}" data-act="open-clock" aria-label="Timer & Stopwatch" title="Timer & Stopwatch">${ic('timer')}</button>`;
+const themeBtnHtml=()=>`<button class="icon-btn" data-act="theme" aria-label="Switch to ${THEME==='dark'?'light':'dark'} theme" title="Switch to ${THEME==='dark'?'light':'dark'} theme">${ic(THEME==='dark'?'sun':'moon')}</button>`;
+
+function calcStreak(){const log=S.log||{};const dates=Object.keys(log).sort();if(!dates.length)return 0;
+ const weekKey=ds=>{const d=new Date(ds+'T00:00:00');const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return ymd(d)};
+ const weeks=new Set(dates.map(weekKey));let cur=new Date();let streak=0;
+ for(let i=0;i<104;i++){const wk=weekKey(ymd(cur));if(weeks.has(wk))streak++;else if(i>0)break;cur.setDate(cur.getDate()-7)}return streak}
+
+function optsHtml(m){const pr=m.p.rows.length,hid=pr-m.placed;
+ return `<details class="opt"${optOpen?' open':''}><summary><span>Programme &amp; Data Options</span><span class="chev">${ic('next')}</span></summary><div class="in">${note?`<p class="note${animNote?' anim-unfold':''}">${esc(note)}</p>`:''}
+<div class="opt-grp">
+ <span class="opt-lbl">Active Programme</span>
+ <div class="prog-seg" role="group" aria-label="Active Programme">
+  ${m.P.map(x=>{const lbl=x.id=='w14'?'Weeks 1–4':x.id=='w58'?'Weeks 5–8':(x.file||x.name);return `<button type="button" class="${x.id==m.p.id?'on':''}" data-setprog="${x.id}">${esc(lbl)}</button>`}).join('')}
+ </div>
+ <p class="opt-desc">${esc(m.p.name)} · ${pr} exercises loaded.${hid>0?` (${hid} unscheduled rows hidden)`:''}</p>
+ <div class="opt-actions">
+  <label class="btn${S.custom?'':' full'}">${ic('up')}Upload CSV<input id="upp" type="file" accept=".csv,text/csv" hidden></label>${S.custom?'<button class="btn dng" data-act="rmprog">Remove CSV</button>':''}
+ </div>
+</div>
+<div class="opt-grp">
+ <span class="opt-lbl">Weight Unit</span>
+ <div class="unit-seg" role="group" aria-label="Weight unit">
+  <button type="button" class="${S.unit=='kg'?'on':''}" data-setunit="kg">Kilograms (kg)</button>
+  <button type="button" class="${S.unit=='lbs'?'on':''}" data-setunit="lbs">Pounds (lbs)</button>
+ </div>
+</div>
+<div class="opt-grp">
+ <span class="opt-lbl">Run &amp; Core Routine</span>
+ <p class="opt-desc" style="margin-top:0">${esc(S.core?S.core.name:'Built-in 360-degree core routine')} · ${m.core.length} exercises on run days.</p>
+ <div class="opt-actions">
+  <label class="btn${S.core?'':' full'}">${ic('up')}Upload Core CSV<input id="upc" type="file" accept=".csv,text/csv" hidden></label>${S.core?'<button class="btn dng" data-act="rmcore">Reset Core</button>':''}
+ </div>
+</div>
+<div class="opt-grp">
+ <span class="opt-lbl">Backup &amp; History</span>
+ <div class="opt-actions" style="margin-top:0">
+  <button class="btn" data-act="expjson">${ic('down')}Backup (.json)</button>
+  <button class="btn" data-act="expcsv">${ic('down')}Logs (.csv)</button>
+  <label class="btn full">${ic('up')}Restore Backup (.json)<input id="impjson" type="file" accept=".json,application/json" hidden></label>
+ </div>
+</div>
+</div></details>`}
+
+const DC=['#ff7a45','#4da3ff','#2fd6a0','#ff4d7e','#b277ff','#ffc83d','#6b7280'];
+function row(d){const c=DC[d.n-1];
+ if(d.rest)return `<div class="dayrow rest" style="--c:${c}"><span class="dno">${d.n}</span><span class="dtx"><b>Rest Day</b></span></div>`;
+ const rm=d.runMeta||{};const rExtra=d.runOn?(rm.dist||rm.time?` · ${[rm.dist,rm.time].filter(Boolean).join(' / ')}`:', run done'):'';
+ return `<button class="dayrow${d.total&&d.done==d.total?' done':''}" style="--c:${c}" data-day="${d.n}"><span class="dno">${d.n}</span><span class="dtx"><b>${esc(d.w)}</b><span>${d.run?esc(d.run)+', ':''}${d.count?d.count+(d.count==1?' exercise':' exercises'):'No exercises in CSV'}${rExtra}</span></span><span class="dst">${d.done}/${d.total} sets</span><span class="bar"><i style="width:${pc(d.done,d.total)}%"></i></span></button>`}
+
+function logDay(k){const n=k.startsWith('run')?+k.slice(3):+k.split('.')[0],m=model(),dd=m.days.find(x=>x.n==n);if(!dd)return;
+ const st=(dd.done||dd.runOn)?((dd.done==dd.total&&(!dd.run||dd.runOn))?2:1):0,key=ymd(new Date()),L=S.log=S.log||{},e=L[key]=L[key]||{};
+ if(st)e[n]=st;else delete e[n];if(!Object.keys(e).length)delete L[key];
+ const H=S.hist=S.hist||{};
+ if(st){
+  const items=[];
+  if(dd.run&&dd.runOn){const rm=dd.runMeta||{};items.push(`${dd.run}${rm.dist?' ('+rm.dist+')':''}${rm.time?' in '+rm.time:''}`)}
+  dd.groups.forEach(g=>g.ex.forEach(ex=>{if(ex.done>0){const wList=ex.wArr.slice(0,ex.done).map(x=>x&&x.w?x.w+S.unit:'').filter(Boolean);items.push(`${ex.r.Exercise}: ${ex.done}/${ex.sets} sets${wList.length?' @ '+wList.join(', '):''}`)}}));
+  H[key]=H[key]||{};H[key][n]={w:dd.w,items};
+ }else if(H[key]){delete H[key][n];if(!Object.keys(H[key]).length)delete H[key]}}
+
+function calHtml(){const y=calY,mo=calM,first=new Date(y,mo,1),lead=(first.getDay()+6)%7,dim=new Date(y,mo+1,0).getDate(),log=S.log||{},td=ymd(new Date());let cells='';
+ for(let i=0;i<lead;i++)cells+='<span></span>';
+ for(let d=1;d<=dim;d++){const k=ymd(new Date(y,mo,d)),e=log[k]||{},dots=Object.keys(e).sort().map(n=>`<i class="${e[n]==2?'f':''}" style="--c:${DC[n-1]}"></i>`).join('');
+  cells+=`<button class="cd${k==td?' td':''}${k==selDate?' sel':''}" data-cdate="${k}"><b>${d}</b><em>${dots}</em></button>`}
+ let det='';
+ if(selDate){const h=(S.hist||{})[selDate];const lg=(S.log||{})[selDate];
+  const detCls='day-detail'+(animDate===selDate?' anim-unfold':'');
+  if(h&&Object.keys(h).length){
+   det=`<div class="${detCls}"><h4>${selDate}</h4>${Object.values(h).map(x=>`<p style="margin:4px 0;font-weight:600">${esc(x.w)}</p><ul>${x.items.map(it=>`<li>${esc(it)}</li>`).join('')}</ul>`).join('')}</div>`;
+  }else if(lg&&Object.keys(lg).length){
+   det=`<div class="${detCls}"><h4>${selDate}</h4><p class="sub">${Object.keys(lg).map(n=>SCHED[n-1]?SCHED[n-1].w:'Day '+n).join(', ')} logged.</p></div>`;
+  }else{
+   det=`<div class="${detCls}"><h4>${selDate}</h4><p class="sub">No workouts logged on this date.</p></div>`;
+  }
+ }
+ const cgCls='cg'+(animCal?(animCal>0?' cal-in-r':' cal-in-l'):'');
+ return `<section class="cal2"><div class="ch"><button class="cb" data-act="calprev" aria-label="Previous month">${ic('back')}</button><h2 class="sec">${first.toLocaleString('en',{month:'long'})} ${y}</h2><button class="cb" data-act="calnext" aria-label="Next month">${ic('next')}</button></div><div class="${cgCls}">${['M','T','W','T','F','S','S'].map(x=>`<small>${x}</small>`).join('')}${cells}</div>${det}<p class="sub">Tap any date to inspect logged workouts. Filled dot = completed, outlined = started.</p></section>`}
+
+function dash(m){const pct=pc(m.done,m.total),streak=calcStreak(),trainedDays=Object.keys(S.log||{}).length;
+ const sum=ask?`<div class="sum${animAsk?' anim-unfold':''}"><p class="pt" style="margin-bottom:12px">Start a new week? Current weights are saved as "Last" targets, and checkboxes reset. Calendar history stays.</p><button class="btn dng" data-act="reset">Start new week</button><button class="btn" data-act="cancel">Cancel</button></div>`:`<div class="sum"><div class="sr"><p class="pt">${m.done}/${m.total} sets completed (${pct}%)</p><button class="btn sm" data-act="ask">${ic('reset')}New week</button></div><span class="bar"><i style="width:${pct}%"></i></span></div>`;
+ const stats=`<div class="stats-row"><div class="stat-box"><span>Week Streak</span><b>${streak} wk${streak===1?'':'s'}</b></div><div class="stat-box"><span>Week Volume</span><b>${m.vol.toLocaleString()} ${S.unit}</b></div><div class="stat-box"><span>Days Logged</span><b>${trainedDays}</b></div></div>`;
+ return `<div class="bar0"><span class="brand">Gym Tracker</span><div class="bar0-r">${themeBtnHtml()}<button class="lo" data-act="logout">Log out (${esc(USER)})</button></div></div><h1 class="ttl">Weekly training</h1><p class="sub">${esc(m.p.name)}</p>${sum}${stats}
+<div class="list">${m.days.map(row).join('')}</div>${calHtml()}${optsHtml(m)}`}
+
+function exCard(e,num){const f=e.r,n=e.sets,c=e.done,full=c==n,open=OPEN.has(e.key),rp=/^[\d-]+$/.test(f.Reps)?f.Reps+' reps':f.Reps,u=f['Video Tutorial'];
+ const fld=(l,v,i,w)=>`<div${w?' class="w"':''}><dt>${ic(i)}${l}</dt><dd>${esc(v)||'—'}</dd></div>`;let sets='';
+ for(let i=0;i<n;i++){
+  const on=!!e.arr[i],cur=e.wArr[i]||{},prv=e.pwArr[i]||{};
+  const subTxt=prv.w?`Last: ${prv.w}${S.unit}${prv.r?' × '+prv.r:''}`:(rp?`Rec: ${rp}`:'');
+  const copyBtn=(i===0&&n>1)?`<button type="button" class="copy-btn" data-copy="${esc(e.key)}" data-sets="${n}" title="Copy Set 1 weight &amp; reps to all sets" aria-label="Copy Set 1 weight and reps to all sets">${ic('fill')}</button>`:'';
+  const chkCls=animChk===e.key+':'+i?' class="chk-pop"':'';
+  sets+=`<div class="set${on?' on':''}"><label class="set-lbl" for="cb-${esc(e.key)}-${i}"><b>Set ${i+1}</b>${subTxt?`<small>${esc(subTxt)}</small>`:''}</label><div class="set-in">${copyBtn}<input class="num-in" type="number" inputmode="decimal" step="0.5" placeholder="${esc(prv.w||S.unit)}" aria-label="Set ${i+1} weight" data-wk="${esc(e.key)}" data-wi="${i}" data-wf="w" value="${esc(cur.w||'')}"><input class="num-in" type="number" inputmode="numeric" placeholder="${esc(prv.r||String(f.Reps||'').replace(/[^\d]/g,'')||'reps')}" aria-label="Set ${i+1} reps" data-wk="${esc(e.key)}" data-wi="${i}" data-wf="r" value="${esc(cur.r||'')}"><input id="cb-${esc(e.key)}-${i}" type="checkbox"${chkCls} data-k="${esc(e.key)}" data-i="${i}" data-exname="${esc(f.Exercise||'')}"${on?' checked':''}></div></div>`}
+ const o2=OPEN2.has(e.key),link=/^https?:\/\//i.test(u)?`<a class="tut" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${ic('play')}Watch Tutorial ↗</a>`:'<span class="sub">No tutorial listed</span>';
+ const detailsHtml=o2?`<div class="${animMore===e.key?'anim-unfold':''}"><dl class="meta">${fld('Target muscle',f['Target Muscle'],'target',1)}${fld('Reps to failure',f['Reps to Failure'],'flame')}${fld('Rest',f.Rest,'clock')}</dl><div class="tut-row">${link}</div></div>`:'';
+ const body=open?`<div class="eb${animEx===e.key?' anim-unfold':''}">${f['Form Notes']?`<p class="notes">${esc(f['Form Notes'])}</p>`:''}<div class="sets">${sets}</div><button class="more" data-more="${esc(e.key)}" aria-expanded="${o2}">${o2?'Hide details':'More details'}${ic('next')}</button>${detailsHtml}</div>`:'';
+ const prTag=e.hasPR?`<span class="pr-badge">PR</span>`:'';
+ const justDone=full&&animChk&&animChk.startsWith(e.key+':');
+ return `<article class="ex${full?' done':''}${open?' open':''}"><button class="eh" data-ex="${esc(e.key)}" aria-expanded="${open}"><span class="no${justDone?' no-pop':''}">${full?ic('check'):num}</span><span class="en">${esc(f.Exercise)||'Untitled exercise'}${prTag}</span><span class="rs"><b>${esc(f.Sets)||n} × ${esc(f.Reps)||'—'}</b><span>${c}/${n} completed</span></span><span class="chev">${ic('next')}</span></button>${body}</article>`}
+
+function wk(m){const d=m.days.find(x=>x.n==S.day)||m.days[0],r0=d.groups&&d.groups[0]&&d.groups[0].rows[0];
+ const strip=m.days.map(x=>`<button class="dy${x.n==d.n?' on':''}${x.total&&x.done==x.total?' full':''}" style="--c:${DC[x.n-1]}" data-day="${x.n}" aria-label="Day ${x.n}">Day<span>${x.n}</span></button>`).join('');
+ const sub=d.rest||d.run?'Day '+d.n:r0?esc(r0.Block)+', listed as '+esc(r0.Day)+' in the CSV':'No exercises for this workout in the CSV';
+ let h=`<div style="--ac:${DC[d.n-1]}"><div class="bar0"><a class="back" href="#dashboard">${ic('back')}Dashboard</a><div class="bar0-r">${clockBtnHtml()}${themeBtnHtml()}</div></div><h1 class="ttl">${esc(d.w)}</h1><p class="sub">${sub}</p>
+<div class="cal"><div class="strip">${strip}</div>${d.rest?'':`<p class="pt">${d.done}/${d.total} sets completed (${pc(d.done,d.total)}%)</p><span class="bar"><i style="width:${pc(d.done,d.total)}%"></i></span>`}</div>`;
+ if(d.rest)return h+'<p class="sub">No training scheduled.</p></div>';
+ if(d.run){const rm=d.runMeta||{};const runKey='run'+d.n;const runPop=animChk===runKey+':0';
+  h+=`<article class="ex${d.runOn?' done':''}"><div class="eh static"><span class="no${d.runOn&&runPop?' no-pop':''}">${d.runOn?ic('check'):ic('pulse')}</span><span class="en">${esc(d.run)}</span></div><div class="eb"><div class="sets" style="margin:0"><label class="set${d.runOn?' on':''}"><span class="set-lbl"><b>Run completed</b><small>Log optional distance &amp; duration below</small></span><input type="checkbox"${runPop?' class="chk-pop"':''} data-k="${runKey}" data-i="0"${d.runOn?' checked':''}></label></div><div class="run-grid"><label>Distance<input type="text" placeholder="e.g. 5 km" data-rk="${runKey}" data-rf="dist" value="${esc(rm.dist||'')}"></label><label>Duration / Intervals<input type="text" placeholder="e.g. 28:30 or 8×400m" data-rk="${runKey}" data-rf="time" value="${esc(rm.time||'')}"></label></div></div></article>`}
+ d.groups.forEach(g=>{if(d.run){const r=g.rows[0];h+=`<h2 class="sec">${esc(g.title)}</h2><p class="sub">${esc(r.Block)}, ${esc(r.Day)}</p>`}h+=g.ex.map((e,i)=>exCard(e,i+1)).join('')});
+ return h+'</div>'}
+
+function loginHtml(){return `<div class="lg"><div class="bar0" style="margin-bottom:12px"><span class="brand">Gym Tracker</span><div class="bar0-r">${themeBtnHtml()}</div></div><h1 class="ttl">Log in</h1><p class="sub">Use the username and password you were given.</p>
+<div class="lf"><input id="lu" class="pi" type="text" placeholder="Username" aria-label="Username" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(loginU)}">
+<div class="prow"><input id="lp" class="pi" type="password" placeholder="Password" aria-label="Password" autocomplete="current-password"><button class="eye" data-act="peek" aria-label="Show password">${ic('eye')}</button></div></div>
+${loginErr?`<p class="err${animErr?' anim-err':''}">${esc(loginErr)}</p>`:''}<button class="btn pri" data-act="login">Log in</button></div>`}
+
+function setGlow(a){const s=document.documentElement.style;a.forEach((c,i)=>s.setProperty('--g'+(i+1),c))}
+function syncAccent(){
+ const root=document.documentElement.style;
+ if(USER&&location.hash=='#workout'){
+  const dc=DC[(+S.day||1)-1];
+  root.setProperty('--ac',dc);
+ }else{
+  root.removeProperty('--ac');
+ }
+}
+function render(){
+ syncWakeLock();syncAccent();
+ const routeKey=USER?(location.hash=='#workout'?'wk:'+S.day:'dash'):'login';
+ const isNewView=routeKey!==lastRouteKey;
+ const prevWkBar=!isNewView&&routeKey.startsWith('wk:')?$('#app .cal .bar i')?.style.width:null;
+ lastRouteKey=routeKey;
+
+ if(!USER){
+  setGlow([DC[0],DC[1],DC[4],DC[2]]);
+  $('#app').innerHTML=`<div class="${isNewView?'anim-view':''}">${loginHtml()}</div>`;
+  animErr=false;
+  return;
+ }
+ const m=model(),y=scrollY,dc=DC[(+S.day||1)-1];
+ setGlow(location.hash=='#workout'?[dc,dc,dc,dc]:[DC[0],DC[1],DC[4],DC[2]]);
+ const content=location.hash=='#workout'?wk(m):dash(m);
+ $('#app').innerHTML=`<div class="${isNewView?'anim-view':''}">${content}</div>`;
+
+ // Smoothly animate workout progress bar width on set toggles
+ if(prevWkBar!==null&&prevWkBar!==undefined){
+  const newBar=$('#app .cal .bar i');
+  if(newBar&&newBar.style.width!==prevWkBar){
+   const targetW=newBar.style.width;
+   newBar.style.width=prevWkBar;
+   newBar.getBoundingClientRect();
+   newBar.style.width=targetW;
+  }
+ }
+
+ animEx=null;animMore=null;animChk=null;animDate=null;animCal=0;animAsk=false;animNote=false;animErr=false;
+ scrollTo(0,y);
+}
+
+document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('opt'))optOpen=e.target.open},true);
+document.addEventListener('click',e=>{
+ // Clock modal & pill interactions
+ const tabBtn=e.target.closest('[data-ctab]');if(tabBtn){if(clockTab!==tabBtn.dataset.ctab){clockTab=tabBtn.dataset.ctab;renderModal(true)}return}
+ const preBtn=e.target.closest('[data-preset]');if(preBtn){startManualTimer(+preBtn.dataset.preset);return}
+ const cact=e.target.closest('[data-cact]');if(cact){
+  const act=cact.dataset.cact;
+  if(act==='modal-bg'&&e.target!==cact)return;
+  if(act==='close-modal'||act==='modal-bg'){closeClockModal();return}
+  if(act==='start-custom-timer'){
+   const m=Math.max(0,parseInt($('#c-min')?.value)||0),s=Math.max(0,parseInt($('#c-sec')?.value)||0);
+   customMin=m;customSec=s;
+   const total=m*60+s;
+   if(total>0)startManualTimer(total);
+   return;
+  }
+  if(act==='start-sw'){startStopwatch();return}
+  if(act==='toggle'){toggleClockRun();return}
+  if(act==='t-sub'){adjustManualTimer(-15);return}
+  if(act==='t-add'){adjustManualTimer(15);return}
+  if(act==='sw-reset'){resetStopwatch();return}
+  if(act==='close'){closeClockPill();return}
+ }
+
+ const cb=e.target.closest('[data-copy]');if(cb){
+  const k=cb.dataset.copy,n=+cb.dataset.sets||1,p=model().p.id;
+  const W=S.weights[p]=S.weights[p]||{},arr=W[k]=W[k]||[],first=arr[0]||{};
+  for(let i=1;i<n;i++){arr[i]={w:first.w||'',r:first.r||''}}
+  save();render();return
+ }
+ const uBtn=e.target.closest('[data-setunit]');if(uBtn){S.unit=uBtn.dataset.setunit;save();render();return}
+ const pOpt=e.target.closest('[data-setprog]');if(pOpt){S.prog=pOpt.dataset.setprog;note='';save();render();return}
+ const b=e.target.closest('[data-day],[data-act],[data-ex],[data-more],[data-cdate]');if(!b)return;
+ if(b.dataset.act=='open-clock'){clockModal=true;renderModal(false);return}
+ if(b.dataset.act=='theme'){applyTheme(THEME==='dark'?'light':'dark',true);render();return}
+ if(b.dataset.act=='peek'){const p=$('#lp'),s=p.type=='password';p.type=s?'text':'password';b.innerHTML=ic(s?'eyeoff':'eye');b.setAttribute('aria-label',s?'Hide password':'Show password');return}
+ if(b.dataset.cdate!=null){selDate=selDate==b.dataset.cdate?null:b.dataset.cdate;animDate=selDate;render();return}
+ if(b.dataset.more!=null){const k=b.dataset.more;if(OPEN2.has(k))OPEN2.delete(k);else{OPEN2.add(k);animMore=k}render();return}
+ if(b.dataset.ex!=null){const k=b.dataset.ex;if(OPEN.has(k))OPEN.delete(k);else{OPEN.add(k);animEx=k}render();return}
+ if(b.dataset.day){S.day=+b.dataset.day;save();if(location.hash=='#workout')render();else{location.hash='workout'}return}
+ const a=b.dataset.act;
+ if(a=='ask'){ask=true;animAsk=true}else if(a=='cancel')ask=false;else if(a=='calprev'){if(--calM<0){calM=11;calY--}animCal=-1}else if(a=='calnext'){if(++calM>11){calM=0;calY++}animCal=1}
+ else if(a=='login'){loginU=$('#lu').value.trim();const p=$('#lp').value,u=loginU.toLowerCase();if(u&&USERS[u]!==undefined&&USERS[u]===p){enter(u);loginErr='';loginU='';note='';ask=false}else{loginErr='Wrong username or password.';animErr=true}}
+ else if(a=='logout'){save();USER=null;try{localStorage.removeItem(SESS)}catch(e){}ckSet('gt_session','',0);note='';ask=false}
+ else if(a=='reset'){const pid=model().p.id;S.prevWeights[pid]=JSON.parse(JSON.stringify(S.weights[pid]||{}));S.done[pid]={};ask=false;note='New week started — previous weights saved as targets.';animNote=true}
+ else if(a=='rmprog'){delete S.custom;S.prog='w14';note='Uploaded programme removed.';animNote=true}
+ else if(a=='rmcore'){delete S.core;note='Using the built-in core workout.';animNote=true}
+ else if(a=='expjson'){const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=`gym-tracker-backup-${ymd(new Date())}.json`;a.click();URL.revokeObjectURL(u);note='Backup exported.';animNote=true}
+ else if(a=='expcsv'){const rows=[['Date','Workout','Summary']];Object.entries(S.hist||{}).sort().forEach(([dt,days])=>Object.values(days).forEach(d=>rows.push([dt,d.w,d.items.join(' | ')])));const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=`gym-logs-${ymd(new Date())}.csv`;a.click();URL.revokeObjectURL(u);note='CSV log exported.';animNote=true}
+ save();render()});
+
+document.addEventListener('input',e=>{const t=e.target;
+ if(t.dataset.wk){const p=model().p.id,W=S.weights[p]=S.weights[p]||{},arr=W[t.dataset.wk]=W[t.dataset.wk]||[],idx=+t.dataset.wi;arr[idx]=arr[idx]||{};arr[idx][t.dataset.wf]=t.value;save()}
+ else if(t.dataset.rk){const p=model().p.id,R=S.runs[p]=S.runs[p]||{},obj=R[t.dataset.rk]=R[t.dataset.rk]||{};obj[t.dataset.rf]=t.value;save()}});
+
+document.addEventListener('change',async e=>{const t=e.target;
+ if(t.dataset.k){
+  const p=model().p.id,d=S.done[p]=S.done[p]||{},a=d[t.dataset.k]=d[t.dataset.k]||[],idx=+t.dataset.i;
+  a[idx]=t.checked;
+  if(t.checked){
+   animChk=t.dataset.k+':'+idx;
+   const wEntry=((S.weights[p]||{})[t.dataset.k]||[])[idx]||{};
+   if(t.dataset.exname&&wEntry.w)checkPR(t.dataset.exname,wEntry.w,wEntry.r||1);
+  }
+  logDay(t.dataset.k);save();render()
+ }
+ else if(t.id=='prog'){S.prog=t.value;note='';save();render()}
+ else if(t.id=='unit'){S.unit=t.value;save();render()}
+ else if(t.id=='impjson'){const f=t.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(data&&typeof data=='object'&&data.done){S=Object.assign(DEF(),data);note='Backup restored successfully.';animNote=true}else{note='Invalid backup file.';animNote=true}}catch(x){note='Could not read backup file.';animNote=true}t.value='';save();render()}
+ else if(t.id=='upp'||t.id=='upc'){const f=t.files[0];if(!f)return;let ok=false,rows=[],txt='';
+  try{txt=await f.text();rows=parseCSV(txt);ok=rows.length&&['Exercise','Sets','Workout'].every(k=>k in rows[0])}catch(x){}
+  if(ok){if(t.id=='upp'){S.custom={name:f.name,csv:txt};S.prog='custom'}else S.core={name:f.name,csv:txt};note=`Loaded ${rows.length} exercises from ${f.name}.`}
+  else note=`${f.name} couldn’t be loaded. The CSV needs at least Workout, Exercise and Sets columns.`;
+  animNote=true;t.value='';save();render()}});
+
+document.addEventListener('keydown',e=>{if(e.key=='Enter'&&(e.target.id=='lu'||e.target.id=='lp'))$('[data-act=login]').click()});
+addEventListener('hashchange',()=>{note='';ask=false;render();scrollTo(0,0)});
+render();
+
+const EMB=CSV.logins;
+async function getTxt(names){let err='not found';for(const n of names){try{const r=await fetch(n,{cache:'no-store'});if(!r.ok){err='HTTP '+r.status;continue}const x=await r.text();if(x.trim()&&!/^\s*</.test(x))return{x,n};err='unexpected content'}catch(e){err='could not be fetched'}}return{err}}
+if(LIVE)(async()=>{
+ const L=await getTxt(['logins.txt','logins.txt.txt','Logins.txt','login.txt']);
+ if(L.x){CSV.logins=L.x;buildUsers();if(!Object.keys(USERS).length){CSV.logins=EMB;buildUsers()}}
+ const u=$('#lu');if(u)loginU=u.value;render();
+ for(const f of [['w14','weeks-1-4.csv'],['w58','weeks-5-8.csv'],['core','core-workout.csv']]){const r=await getTxt([f[1]]);if(r.x)CSV[f[0]]=r.x}
+ if(USER)render()})();
+</script></body></html>
