@@ -123,10 +123,10 @@ function parseCSV(t){t=t.replace(/^\uFEFF/,'');const rows=[];let r=[],f='',q=fal
 const KEY='gymtracker.v1',SESS=KEY+'.session',USERS={};
 // Approved logins come from logins.txt: one "username:password" per line.
 function buildUsers(){for(const k in USERS)delete USERS[k];CSV.logins.replace(/^\uFEFF/,'').split(/\r?\n/).forEach(l=>{l=l.trim();const i=l.indexOf(':');if(!l||l[0]=='#'||i<1)return;USERS[l.slice(0,i).trim().toLowerCase()]=l.slice(i+1).trim()})}buildUsers();
-const LIVE=true;
+const LIVE=false;
 // Cookies keep the login and progress as a backup to local storage (chunked to stay under the 4 KB cookie limit).
 const ckSafe=s=>s.replace(/[^a-z0-9]/gi,c=>'_'+c.charCodeAt(0).toString(16));
-function ckSet(n,v,days){try{document.cookie=n+'='+v+';max-age='+(days*86400)+';path=/;SameSite=Lax'+(location.protocol=='https:'?';Secure':'')}catch(e){}}
+function ckSet(n,v,days){try{document.cookie=n+'='+v+';max-age='+(days*86400)+';path=/'+(location.protocol=='https:'?';SameSite=None;Secure;Partitioned':';SameSite=Lax')}catch(e){}}
 function ckGet(n){try{const m=document.cookie.split('; ').find(x=>x.startsWith(n+'='));return m?m.slice(n.length+1):null}catch(e){return null}}
 function ckSave(u,o){const b='gt.'+ckSafe(u)+'.',enc=encodeURIComponent(JSON.stringify(o)),old=+ckGet(b+'n')||0,n=Math.ceil(enc.length/3500);
  for(let i=0;i<n;i++)ckSet(b+i,enc.slice(i*3500,(i+1)*3500),365);for(let i=n;i<old;i++)ckSet(b+i,'',0);ckSet(b+'n',n,365)}
