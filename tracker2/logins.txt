@@ -1,0 +1,5 @@
+# Approved logins. One per line, written as  username:password
+# Lines starting with # are ignored. Usernames are not case sensitive, passwords are.
+demo:demo123
+friend:letmein
+jaymin:jaymin123
